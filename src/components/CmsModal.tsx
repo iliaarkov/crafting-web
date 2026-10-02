@@ -53,7 +53,7 @@ export const CmsModal: React.FC = () => {
 
   if (!isCmsOpen) return null;
 
-  const requiredPassword = (import.meta.env.CMS_PASSWORD || 'ilya2026').trim();
+  const requiredPassword = (import.meta.env.CMS_PASSWORD).trim();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
