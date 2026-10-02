@@ -53,7 +53,7 @@ export const CmsModal: React.FC = () => {
 
   if (!isCmsOpen) return null;
 
-  const requiredPassword = (import.meta.env.VITE_CMS_PASSWORD || 'ilya2026').trim();
+  const requiredPassword = (import.meta.env.CMS_PASSWORD || 'ilya2026').trim();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,8 +215,8 @@ export const CmsModal: React.FC = () => {
 
               <div className="mt-6 pt-4 border-t border-white/5 text-[11px] text-slate-500">
                 {lang === 'ru'
-                  ? 'Задается переменной: VITE_CMS_PASSWORD'
-                  : 'Configured via VITE_CMS_PASSWORD'}
+                  ? 'Задается переменной: CMS_PASSWORD'
+                  : 'Configured via CMS_PASSWORD'}
               </div>
             </div>
           </div>
