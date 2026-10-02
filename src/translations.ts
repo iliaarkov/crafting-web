@@ -254,7 +254,7 @@ export const translations: Record<Language, Translations> = {
     about: {
       title: 'Разрабатываю современные сайты для экспертов и небольшого бизнеса',
       p1: 'Меня зовут Илья Арьков. Я веб-разработчик с профильным высшим образованием. Создаю сайты для специалистов, небольших компаний, некоммерческих организаций и проектов, которым важно понятно представить себя в интернете.',
-      p2: 'Моя задача — аккуратно собрать предоставленную вами информацию и превратить её в современный, быстрый и удобный сайт.',
+      p2: 'Моя задача – аккуратно собрать предоставленную вами информацию и превратить её в современный, быстрый и удобный сайт.',
       canIncludeTitle: 'Я могу разместить на нём:',
       canIncludeList: [
         'услуги и цены;',
@@ -265,7 +265,7 @@ export const translations: Record<Language, Translations> = {
         'форму заявки или кнопку записи;',
         'дополнительные функции для работы с данными.',
       ],
-      directComm: 'Вы общаетесь непосредственно со мной — без менеджеров, долгих согласований и передачи задачи между разными исполнителями.',
+      directComm: 'Вы общаетесь непосредственно со мной – без менеджеров, долгих согласований и передачи задачи между разными исполнителями.',
       whoIsItForTitle: 'Кому подойдёт сотрудничество',
       whoIsItForList: [
         'репетиторам, преподавателям и консультантам;',
@@ -306,10 +306,10 @@ export const translations: Record<Language, Translations> = {
         },
         {
           title: 'Более оформленная подача бизнеса',
-          description: 'Отдельный сайт с собственным адресом помогает показать, что ваша работа — это организованная услуга, а не случайные заказы через личные сообщения.',
+          description: 'Отдельный сайт с собственным адресом помогает показать, что ваша работа – это организованная услуга, а не случайные заказы через личные сообщения.',
         },
         {
-          title: 'Вы не зависите только от социальной сети (особенно в эпоху блокировок)',
+          title: 'Вы не зависите только от социальной сети',
           description: 'Сайт становится самостоятельной страницей бизнеса, ссылку на которую можно использовать в профиле, рекламе, сообщениях, визитках и других материалах.',
         },
       ],
@@ -345,7 +345,7 @@ export const translations: Record<Language, Translations> = {
     },
     tools: {
       title: 'Современные инструменты без лишней технической сложности',
-      intro: 'Я использую технологии, которые позволяют создавать быстрые, адаптивные и удобные сайты. Вам необязательно разбираться в программировании — я объясню всё простыми словами.',
+      intro: 'Я использую технологии, которые позволяют создавать быстрые, адаптивные и удобные сайты. Вам необязательно разбираться в программировании – я объясню всё простыми словами.',
       items: [
         {
           name: 'React',
@@ -509,7 +509,7 @@ export const translations: Record<Language, Translations> = {
       preTitle: 'Стартовые цены',
       title: 'Выберите подходящий формат сайта',
       intro: 'Сейчас я расширяю портфолио, поэтому предлагаю разработку по специальной стоимости для ближайших трёх проектов.',
-      strikethroughNote: 'Зачёркнутая цена — моя планируемая базовая стоимость после завершения этапа формирования портфолио.',
+      strikethroughNote: 'Зачёркнутая цена – моя планируемая базовая стоимость после завершения этапа формирования портфолио.',
       durationPrefix: 'Срок:',
       includedTitle: 'Входит:',
       plans: [
@@ -627,7 +627,7 @@ export const translations: Record<Language, Translations> = {
             description: 'Храните заявки, товары и другую необходимую информацию.',
           },
           {
-            title: 'Уведомления в Telegram',
+            title: 'Уведомления в Telegram / соц.сеть / на почту',
             description: 'Получайте сообщение, когда посетитель заполняет форму на сайте.',
           },
           {
@@ -674,7 +674,7 @@ export const translations: Record<Language, Translations> = {
       title: 'Расскажите, какой сайт вам нужен',
       description1: 'Для предварительной оценки пришлите ссылку на ваши социальные сети или существующий сайт и коротко опишите задачу.',
       description2: 'Я посмотрю материалы, задам несколько вопросов и предложу подходящий формат работы.',
-      btnTelegram: 'Написать Илье в Telegram',
+      btnTelegram: 'Написать Илье',
       btnSubmitProject: 'Отправить описание проекта',
       disclaimer: 'Предварительное обсуждение бесплатно и ни к чему вас не обязывает.',
       form: {
@@ -779,7 +779,7 @@ export const translations: Record<Language, Translations> = {
         'lead inquiry form or booking button;',
         'custom database features and data tools.',
       ],
-      directComm: 'You communicate directly with me — without account managers, long approvals, or tasks getting lost between different subcontractors.',
+      directComm: 'You communicate directly with me – without account managers, long approvals, or tasks getting lost between different subcontractors.',
       whoIsItForTitle: 'Who this collaboration is for',
       whoIsItForList: [
         'tutors, teachers, and business consultants;',
@@ -859,7 +859,7 @@ export const translations: Record<Language, Translations> = {
     },
     tools: {
       title: 'Modern tech stack without unnecessary complexity',
-      intro: 'I utilize proven technologies that yield ultra-fast, responsive, and reliable websites. You do not need to understand code — I explain everything in simple, clear terms.',
+      intro: 'I utilize proven technologies that yield ultra-fast, responsive, and reliable websites. You do not need to understand code – I explain everything in simple, clear terms.',
       items: [
         {
           name: 'React',
@@ -1070,7 +1070,7 @@ export const translations: Record<Language, Translations> = {
             'portfolio showcase with case studies;',
             'collaboration process steps;',
             'interactive FAQ accordion;',
-            'lead form or Telegram inquiry buttons;',
+            'lead form or Telegram / Email / SM inquiry buttons;',
             'assistance structuring provided content;',
             'foundational technical SEO setup;',
             'analytics integration (Google/Yandex);',
@@ -1098,7 +1098,7 @@ export const translations: Record<Language, Translations> = {
             'administrative content panel (CMS);',
             'add & edit content easily;',
             'lead storage & dispatch;',
-            'instant Telegram lead notifications;',
+            'instant Telegram / Email / SM lead notifications;',
             'interactive forms & custom UI logic;',
             'advanced technical SEO setup;',
             'analytics & goal tracking setup;',
@@ -1188,7 +1188,7 @@ export const translations: Record<Language, Translations> = {
       title: 'Tell me what website you need',
       description1: 'For an initial assessment, send a link to your current social media or existing site and briefly describe your vision.',
       description2: 'I will review your materials, ask a few clarifying questions, and recommend the best collaboration approach.',
-      btnTelegram: 'Message Ilia on Telegram',
+      btnTelegram: 'Message Ilia',
       btnSubmitProject: 'Submit Project Details',
       disclaimer: 'The preliminary consultation is free and carries no obligation.',
       form: {

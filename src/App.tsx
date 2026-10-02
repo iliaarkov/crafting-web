@@ -14,6 +14,7 @@ import { WhyCheaper } from './components/WhyCheaper';
 import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { CmsModal } from './components/CmsModal';
+import { ScrollToTop } from './components/ScrollToTop';
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           </main>
           <Footer />
           <CmsModal />
+          <ScrollToTop />
         </div>
       </CmsProvider>
     </LanguageProvider>

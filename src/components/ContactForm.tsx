@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useCms } from '../context/CmsContext';
-import { Send, MessageSquare, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ContactForm: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -17,6 +17,17 @@ export const ContactForm: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Синхронизация с тарифами
+  useEffect(() => {
+    const handleSelectPlan = (e: any) => {
+      if (e.detail) {
+        setTariff(e.detail);
+      }
+    };
+    window.addEventListener('select-plan', handleSelectPlan);
+    return () => window.removeEventListener('select-plan', handleSelectPlan);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !contact.trim()) {
@@ -27,11 +38,21 @@ export const ContactForm: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    const tariffLabels: Record<string, string> = {
+      start: lang === 'ru' ? 'Тариф «СТАРТ» (39 000 ₽)' : 'START Plan ($420 / 39,000 ₽)',
+      optimal: lang === 'ru' ? 'Тариф «ОПТИМАЛЬНЫЙ» (69 000 ₽)' : 'OPTIMAL Plan ($740 / 69,000 ₽)',
+      business: lang === 'ru' ? 'Тариф «БИЗНЕС» (99 000 ₽)' : 'BUSINESS Plan ($1,060 / 99,000 ₽)',
+      redesign: lang === 'ru' ? 'Переделка существующего сайта (от 49 000 ₽)' : 'Redesign of Existing Site (from $525)',
+      custom: lang === 'ru' ? 'Индивидуальный проект' : 'Custom Project',
+    };
+
+    const friendlyTariff = tariffLabels[tariff] || tariff || (lang === 'ru' ? 'Индивидуальный расчет' : 'Custom Estimate');
+
     try {
       const res = await submitLead({
         name,
         contact,
-        tariff: tariff || (lang === 'ru' ? 'Индивидуальный расчет' : 'Custom Estimate'),
+        tariff: friendlyTariff,
         projectUrl,
         message,
         lang,
@@ -68,24 +89,9 @@ export const ContactForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Прямая связь в Telegram */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <a
-            href="https://t.me/arkovilya"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-white bg-[#229ED9] hover:bg-[#1e8ec3] shadow-lg shadow-[#229ED9]/25 hover:shadow-[#229ED9]/40 transition-all flex items-center justify-center gap-2.5 text-base cursor-pointer"
-          >
-            <MessageSquare className="w-5 h-5 fill-current" />
-            <span>{t.contact.btnTelegram}</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </a>
-        </div>
-
-        {/* Форма заявки */}
         <div className="glass-panel rounded-3xl p-6 sm:p-10 border border-white/10 max-w-3xl mx-auto shadow-2xl relative">
           <div className="text-xs font-semibold uppercase tracking-wider text-cyan-400 mb-6 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400" />
             <span>{t.contact.btnSubmitProject}</span>
           </div>
 
@@ -102,7 +108,7 @@ export const ContactForm: React.FC = () => {
               </p>
               <button
                 onClick={() => setSubmitted(false)}
-                className="px-6 py-2.5 rounded-full text-sm font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="px-6 py-2.5 rounded-full text-sm font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
               >
                 {t.contact.form.sendAnother}
               </button>
@@ -154,22 +160,22 @@ export const ContactForm: React.FC = () => {
                   id="tariff-select"
                   value={tariff}
                   onChange={(e) => setTariff(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0c1017] border border-white/10 focus:border-cyan-400 focus:outline-none text-white text-sm transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0c1017] border border-white/10 focus:border-cyan-400 focus:outline-none text-white text-sm transition-colors cursor-pointer"
                 >
                   <option value="">{t.contact.form.tariffPlaceholder}</option>
-                  <option value="СТАРТ — Сайт-визитка (39 000 ₽)">
+                  <option value="start">
                     {lang === 'ru' ? 'Тариф «СТАРТ» (39 000 ₽)' : 'START Plan ($420 / 39,000 ₽)'}
                   </option>
-                  <option value="ОПТИМАЛЬНЫЙ — Для эксперта или бизнеса (69 000 ₽)">
+                  <option value="optimal">
                     {lang === 'ru' ? 'Тариф «ОПТИМАЛЬНЫЙ» (69 000 ₽)' : 'OPTIMAL Plan ($740 / 69,000 ₽)'}
                   </option>
-                  <option value="БИЗНЕС — С базой данных и админ-панелью (99 000 ₽)">
+                  <option value="business">
                     {lang === 'ru' ? 'Тариф «БИЗНЕС» (99 000 ₽)' : 'BUSINESS Plan ($1,060 / 99,000 ₽)'}
                   </option>
-                  <option value="Переделка существующего сайта (от 49 000 ₽)">
+                  <option value="redesign">
                     {lang === 'ru' ? 'Переделка существующего сайта (от 49 000 ₽)' : 'Redesign of Existing Site (from $525)'}
                   </option>
-                  <option value="Индивидуальный проект">
+                  <option value="custom">
                     {lang === 'ru' ? 'Другая задача / индивидуальный проект' : 'Custom task / individual inquiry'}
                   </option>
                 </select>
@@ -226,3 +232,5 @@ export const ContactForm: React.FC = () => {
     </section>
   );
 };
+
+export default ContactForm;
