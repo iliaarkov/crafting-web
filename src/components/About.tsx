@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useCms } from '../context/CmsContext';
 import { Check, X, Code2, GraduationCap, Users2, Sparkles, UserCheck } from 'lucide-react';
 
 export const About: React.FC = () => {
   const { t, lang } = useLanguage();
-  const { cmsContent } = useCms();
   const [imgError, setImgError] = useState(false);
 
-  const photoSrc = cmsContent.aboutPhotoUrl || '/images/ilya.jpg';
-  const photoScale = cmsContent.aboutPhotoScale || 1;
-  const photoPosX = cmsContent.aboutPhotoPositionX ?? 50;
-  const photoPosY = cmsContent.aboutPhotoPositionY ?? 50;
+  const photoSrc = '/images/ilya.jpg';
+  const photoScale = 1;
+  const photoPosX = 50;
+  const photoPosY = 50;
 
   const p1Text = lang === 'ru'
-    ? (cmsContent.aboutP1Ru || t.about.p1)
-    : (cmsContent.aboutP1En || t.about.p1);
+    ? (t.about.p1)
+    : (t.about.p1);
 
   const p2Text = lang === 'ru'
-    ? (cmsContent.aboutP2Ru || t.about.p2)
-    : (cmsContent.aboutP2En || t.about.p2);
+    ? (t.about.p2)
+    : (t.about.p2);
 
   return (
     <section id="about" className="py-20 lg:py-28 relative">

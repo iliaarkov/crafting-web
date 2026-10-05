@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useCms } from '../context/CmsContext';
 import { ProjectModal, type ProjectData } from './ProjectModal';
 import { ArrowUpRight, Check, Eye } from 'lucide-react';
 
 export const Projects: React.FC = () => {
-  const { t, lang } = useLanguage();
-  const { cmsContent } = useCms();
+  const { t } = useLanguage();
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   const handleDiscuss = () => {
@@ -19,22 +17,6 @@ export const Projects: React.FC = () => {
       });
     }
   };
-
-  const customProjectsData: ProjectData[] = (cmsContent.customProjects || []).map((cp) => ({
-    id: cp.id,
-    title: lang === 'ru' ? cp.titleRu : cp.titleEn,
-    tag: lang === 'ru' ? cp.tagRu : cp.tagEn,
-    description: lang === 'ru' ? cp.descRu : cp.descEn,
-    p2: lang === 'ru' ? cp.p2Ru : cp.p2En,
-    p3: lang === 'ru' ? cp.p3Ru : cp.p3En,
-    whatDoneTitle: lang === 'ru' ? 'Что сделано:' : 'What was delivered:',
-    whatDoneList: (lang === 'ru' ? cp.whatDoneRu : cp.whatDoneEn) || [],
-    btnText: lang === 'ru' ? 'Посмотреть проект' : 'View Project',
-    image: cp.image,
-    images: cp.images && cp.images.length > 0 ? cp.images : [cp.image],
-  }));
-
-  const allProjects: ProjectData[] = [...customProjectsData, ...t.projects.items];
 
   return (
     <section id="projects" className="py-20 lg:py-28 relative">
@@ -52,7 +34,7 @@ export const Projects: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {allProjects.map((project) => (
+          {t.projects.items.map((project) => (
             <div
               key={project.id}
               className="glass-panel rounded-3xl border border-white/10 overflow-hidden flex flex-col justify-between group hover:border-cyan-500/30 transition-all duration-300"
@@ -73,40 +55,51 @@ export const Projects: React.FC = () => {
                   <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-cyan-400 text-slate-950 shadow-lg">
                       <Eye className="w-3.5 h-3.5" />
-                      <span>{t.projects.btnViewScreens}</span>
+                      <span>{project.btnText}</span>
+                    </span>
+                  </div>
+
+                  <div className="absolute top-4 left-4">
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-cyan-300 border border-white/10">
+                      {project.tag}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-6 sm:p-7">
-                  <div className="text-xs font-medium text-cyan-400 mb-2">
-                    {project.tag}
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                  <h3
+                    className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors cursor-pointer"
+                    onClick={() => setSelectedProject(project)}
+                  >
                     {project.title}
                   </h3>
-                  <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                  <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
                     {project.description}
                   </p>
 
-                  <div className="space-y-2 mb-6">
-                    {project.whatDoneList.slice(0, 3).map((feat, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-slate-400">
-                        <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
+                  <div className="pt-4 border-t border-white/5 space-y-2">
+                    <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">
+                      {project.whatDoneTitle}
+                    </div>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {project.whatDoneList.slice(0, 4).map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
+                          <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                          <span className="truncate">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 sm:p-7 pt-0">
+              <div className="px-6 pb-6 sm:px-7 sm:pb-7 pt-2">
                 <button
                   onClick={() => setSelectedProject(project)}
-                  className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-200 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer group-hover:border-cyan-500/30"
+                  className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-cyan-300 bg-white/5 hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <span>{project.btnText}</span>
-                  <ArrowUpRight className="w-4 h-4 text-cyan-400" />
+                  <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -122,5 +115,3 @@ export const Projects: React.FC = () => {
     </section>
   );
 };
-
-export default Projects;

@@ -1,16 +1,14 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useCms } from '../context/CmsContext';
 import { ArrowRight, Sparkles, Zap, ShieldCheck, UserCheck } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   const { t, lang } = useLanguage();
-  const { cmsContent } = useCms();
 
   // Динамический статус из CMS (или стандартный из translations)
   const badgeText = lang === 'ru'
-    ? (cmsContent.heroBadgeRu || t.hero.badge)
-    : (cmsContent.heroBadgeEn || t.hero.badge);
+    ? (t.hero.badge)
+    : (t.hero.badge);
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
