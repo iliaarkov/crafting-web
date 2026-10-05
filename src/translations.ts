@@ -648,7 +648,7 @@ export const translations: Record<Language, Translations> = {
     whyCheaper: {
       preTitle: 'Честно о стоимости',
       title: 'Почему сейчас дешевле обычной цены',
-      intro1: 'Я нахожусь на этапе расширения коммерческого портфолио. У меня уже есть технические навыки и готовые проекты, но пока меньше публичных кейсов и отзывов, чем у разработчиков с многолетним опытом.',
+      intro1: 'Я нахожусь на этапе расширения коммерческого портфолио. У меня уже есть технические навыки и готовые проекты, но пока меньше публичных кейсов и отзывов, чем хотелось бы для повышения цены.',
       intro2: 'Поэтому ближайшие проекты я беру по сниженной стоимости.',
       reasons: [
         {
@@ -1162,7 +1162,7 @@ export const translations: Record<Language, Translations> = {
     whyCheaper: {
       preTitle: 'Honest About Pricing',
       title: 'Why rates are currently lower than average',
-      intro1: 'I am actively expanding my commercial portfolio. While I possess solid computer science foundations and completed projects, I have fewer public client reviews than developers with 10+ years in the industry.',
+      intro1: 'I am currently in the process of expanding my commercial portfolio. I already have the technical skills and completed projects, but I don’t yet have as many public case studies and testimonials as I would like in order to increase my rates.',
       intro2: 'That is why I am offering these first upcoming client projects at an accessible entry rate.',
       reasons: [
         {
