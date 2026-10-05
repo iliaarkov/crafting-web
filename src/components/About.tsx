@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useCms } from '../context/CmsContext';
 import { Check, X, Code2, GraduationCap, Users2, Sparkles, UserCheck } from 'lucide-react';
 
 export const About: React.FC = () => {
   const { t, lang } = useLanguage();
+  const { cmsContent } = useCms();
   const [imgError, setImgError] = useState(false);
+
+  const photoSrc = cmsContent.aboutPhotoUrl || '/images/ilya.jpg';
+  const photoScale = cmsContent.aboutPhotoScale || 1;
+  const photoPosX = cmsContent.aboutPhotoPositionX ?? 50;
+  const photoPosY = cmsContent.aboutPhotoPositionY ?? 50;
+
+  const p1Text = lang === 'ru'
+    ? (cmsContent.aboutP1Ru || t.about.p1)
+    : (cmsContent.aboutP1En || t.about.p1);
+
+  const p2Text = lang === 'ru'
+    ? (cmsContent.aboutP2Ru || t.about.p2)
+    : (cmsContent.aboutP2En || t.about.p2);
 
   return (
     <section id="about" className="py-20 lg:py-28 relative">
@@ -18,9 +33,8 @@ export const About: React.FC = () => {
           </h2>
         </div>
 
-        {/* Карточка профиля и история */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-          {/* Фото и бейджи разработчика */}
+          {/* Фото и кадрирование */}
           <div className="lg:col-span-4 glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 flex flex-col justify-between items-center text-center relative overflow-hidden group">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-cyan-500/10 blur-[60px] rounded-full pointer-events-none -z-10" />
 
@@ -28,10 +42,15 @@ export const About: React.FC = () => {
               <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-2xl overflow-hidden border-2 border-cyan-400/30 shadow-2xl shadow-cyan-950/50 mb-5 bg-[#090d14] group-hover:border-cyan-400/60 transition-colors">
                 {!imgError ? (
                   <img
-                    src="/images/ilya.jpg"
+                    key={photoSrc}
+                    src={photoSrc}
                     alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
                     onError={() => setImgError(true)}
-                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                    style={{
+                      transform: `scale(${photoScale})`,
+                      objectPosition: `${photoPosX}% ${photoPosY}%`,
+                    }}
+                    className="w-full h-full object-cover transition-transform duration-300"
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/80 via-[#0a0f18] to-slate-900 text-cyan-300 p-4">
@@ -71,12 +90,11 @@ export const About: React.FC = () => {
             </div>
           </div>
 
-          {/* Описание и услуги */}
           <div className="lg:col-span-8 flex flex-col gap-6">
             <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 flex-1 flex flex-col justify-between">
               <div className="space-y-4 text-slate-300 leading-relaxed text-base sm:text-lg">
-                <p>{t.about.p1}</p>
-                <p className="text-slate-400">{t.about.p2}</p>
+                <p>{p1Text}</p>
+                <p className="text-slate-400">{p2Text}</p>
               </div>
 
               <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-3 text-cyan-300 text-sm font-medium">
@@ -102,7 +120,6 @@ export const About: React.FC = () => {
           </div>
         </div>
 
-        {/* Кому подходит vs не подходит */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-emerald-500/20 bg-[#091214]/60">
             <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-lg mb-6">

@@ -1,3 +1,4 @@
+/* eslint-disable react/only-export-components, react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface Lead {
@@ -14,15 +15,48 @@ export interface Lead {
   sentToTelegram?: boolean;
 }
 
-export interface TelegramConfig {
-  botToken: string;
-  chatId: string;
+export interface CustomProject {
+  id: string;
+  titleRu: string;
+  titleEn: string;
+  tagRu: string;
+  tagEn: string;
+  descRu: string;
+  descEn: string;
+  p2Ru: string;
+  p2En: string;
+  p3Ru?: string;
+  p3En?: string;
+  whatDoneRu: string[];
+  whatDoneEn: string[];
+  image: string;
+  images: string[];
+}
+
+export interface TariffOverride {
+  currentPrice?: string;
+  oldPrice?: string;
+  currentPriceSub?: string;
+}
+
+export interface CmsContent {
+  heroBadgeRu: string;
+  heroBadgeEn: string;
+  aboutPhotoUrl: string;
+  aboutPhotoScale: number;
+  aboutPhotoPositionX: number;
+  aboutPhotoPositionY: number;
+  aboutP1Ru: string;
+  aboutP1En: string;
+  aboutP2Ru: string;
+  aboutP2En: string;
+  tariffsRu: Record<string, TariffOverride>;
+  tariffsEn: Record<string, TariffOverride>;
+  customProjects: CustomProject[];
 }
 
 interface CmsContextType {
   leads: Lead[];
-  telegramConfig: TelegramConfig;
-  updateTelegramConfig: (config: TelegramConfig) => void;
   updateLeadStatus: (id: string, status: Lead['status']) => void;
   deleteLead: (id: string) => void;
   clearAllLeads: () => void;
@@ -30,13 +64,33 @@ interface CmsContextType {
   isCmsOpen: boolean;
   setIsCmsOpen: (open: boolean) => void;
   exportLeadsCsv: () => void;
-  sendTestTelegramNotification: () => Promise<{ success: boolean; message: string }>;
+  cmsContent: CmsContent;
+  updateCmsContent: (updater: (prev: CmsContent) => CmsContent) => void;
+  addCustomProject: (project: CustomProject) => void;
+  deleteCustomProject: (id: string) => void;
+  updateCustomProject: (id: string, updated: CustomProject) => void;
 }
 
 const CmsContext = createContext<CmsContextType | undefined>(undefined);
 
 const LEADS_STORAGE_KEY = 'ilya_arkov_leads';
-const TG_STORAGE_KEY = 'ilya_arkov_tg_config';
+const CONTENT_STORAGE_KEY = 'ilya_arkov_cms_content';
+
+const defaultContent: CmsContent = {
+  heroBadgeRu: 'Стартовая стоимость для ближайших 3 проектов',
+  heroBadgeEn: 'Starter rates available for next 3 projects',
+  aboutPhotoUrl: '',
+  aboutPhotoScale: 1,
+  aboutPhotoPositionX: 50,
+  aboutPhotoPositionY: 50,
+  aboutP1Ru: '',
+  aboutP1En: '',
+  aboutP2Ru: '',
+  aboutP2En: '',
+  tariffsRu: {},
+  tariffsEn: {},
+  customProjects: [],
+};
 
 export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [leads, setLeads] = useState<Lead[]>(() => {
@@ -47,12 +101,14 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return [];
   });
 
-  const [telegramConfig, setTelegramConfig] = useState<TelegramConfig>(() => {
+  const [cmsContent, setCmsContent] = useState<CmsContent>(() => {
     try {
-      const saved = localStorage.getItem(TG_STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
+      const saved = localStorage.getItem(CONTENT_STORAGE_KEY);
+      if (saved) {
+        return { ...defaultContent, ...JSON.parse(saved) };
+      }
     } catch {}
-    return { botToken: '', chatId: '' };
+    return defaultContent;
   });
 
   const [isCmsOpen, setIsCmsOpen] = useState(false);
@@ -63,12 +119,11 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch {}
   }, [leads]);
 
-  const updateTelegramConfig = (config: TelegramConfig) => {
-    setTelegramConfig(config);
+  useEffect(() => {
     try {
-      localStorage.setItem(TG_STORAGE_KEY, JSON.stringify(config));
+      localStorage.setItem(CONTENT_STORAGE_KEY, JSON.stringify(cmsContent));
     } catch {}
-  };
+  }, [cmsContent]);
 
   const updateLeadStatus = (id: string, status: Lead['status']) => {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l));
@@ -82,6 +137,31 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLeads([]);
   };
 
+  const updateCmsContent = (updater: (prev: CmsContent) => CmsContent) => {
+    setCmsContent(prev => updater(prev));
+  };
+
+  const addCustomProject = (project: CustomProject) => {
+    setCmsContent(prev => ({
+      ...prev,
+      customProjects: [project, ...(prev.customProjects || [])],
+    }));
+  };
+
+  const deleteCustomProject = (id: string) => {
+    setCmsContent(prev => ({
+      ...prev,
+      customProjects: (prev.customProjects || []).filter(p => p.id !== id),
+    }));
+  };
+
+  const updateCustomProject = (id: string, updated: CustomProject) => {
+    setCmsContent(prev => ({
+      ...prev,
+      customProjects: (prev.customProjects || []).map(p => p.id === id ? updated : p),
+    }));
+  };
+
   const submitLead = async (data: Omit<Lead, 'id' | 'createdAt' | 'status'>) => {
     const newLead: Lead = {
       ...data,
@@ -93,7 +173,6 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     let sentToTelegram = false;
 
-    // 1. Попытка отправки через серверную функцию /api/lead (Vercel)
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
@@ -111,36 +190,6 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.warn('Backend /api/lead call failed or running in static mode:', err);
     }
 
-    // 2. Клиентский fallback, если токен введен прямо в настройках CMS
-    if (!sentToTelegram && telegramConfig.botToken && telegramConfig.chatId) {
-      try {
-        const text = `🚀 <b>Новая заявка с сайта!</b>\n\n` +
-          `👤 <b>Имя:</b> ${data.name || 'Не указано'}\n` +
-          `📱 <b>Контакт:</b> ${data.contact || 'Не указано'}\n` +
-          `💼 <b>Тариф:</b> ${data.tariff || 'Не выбран'}\n` +
-          `🔗 <b>Проект:</b> ${data.projectUrl || 'Нет'}\n` +
-          `📝 <b>Сообщение:</b>\n${data.message || 'Без описания'}\n\n` +
-          `🌐 <b>Язык:</b> ${data.lang || 'ru'}\n` +
-          `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`;
-
-        const tgRes = await fetch(`https://api.telegram.org/bot${telegramConfig.botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: telegramConfig.chatId,
-            text,
-            parse_mode: 'HTML',
-          }),
-        });
-        const tgData = await tgRes.json();
-        if (tgData.ok) {
-          sentToTelegram = true;
-        }
-      } catch (tgErr) {
-        console.warn('Client-side Telegram dispatch failed:', tgErr);
-      }
-    }
-
     newLead.sentToTelegram = sentToTelegram;
     setLeads(prev => [newLead, ...prev]);
 
@@ -148,30 +197,6 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       success: true,
       sentToTelegram,
     };
-  };
-
-  const sendTestTelegramNotification = async () => {
-    if (!telegramConfig.botToken || !telegramConfig.chatId) {
-      return { success: false, message: 'Укажите Bot Token и Chat ID' };
-    }
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${telegramConfig.botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: telegramConfig.chatId,
-          text: `🔔 <b>Тестовое уведомление!</b>\nИнтеграция Telegram бота для сайта Ильи Арькова успешно подключена.`,
-          parse_mode: 'HTML',
-        }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        return { success: true, message: 'Тестовое сообщение успешно отправлено в ваш Telegram!' };
-      }
-      return { success: false, message: data.description || 'Ошибка Telegram API' };
-    } catch (e: any) {
-      return { success: false, message: e.message || 'Не удалось отправить сообщение' };
-    }
   };
 
   const exportLeadsCsv = () => {
@@ -203,8 +228,6 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <CmsContext.Provider
       value={{
         leads,
-        telegramConfig,
-        updateTelegramConfig,
         updateLeadStatus,
         deleteLead,
         clearAllLeads,
@@ -212,7 +235,11 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isCmsOpen,
         setIsCmsOpen,
         exportLeadsCsv,
-        sendTestTelegramNotification,
+        cmsContent,
+        updateCmsContent,
+        addCustomProject,
+        deleteCustomProject,
+        updateCustomProject,
       }}
     >
       {children}
@@ -220,6 +247,7 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 };
 
+// oxlint-disable-next-line react/only-export-components
 export const useCms = (): CmsContextType => {
   const context = useContext(CmsContext);
   if (!context) {
