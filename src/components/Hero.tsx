@@ -250,10 +250,10 @@ export const Hero: React.FC = () => {
             <span>{t.hero.ctaSecondary}</span>
           </a>
 
-          <div className="hidden sm:flex items-center gap-2 px-4 py-3 rounded-full text-xs font-medium text-slate-400 border border-white/5 bg-white/[0.02]">
+          {/* <div className="hidden sm:flex items-center gap-2 px-4 py-3 rounded-full text-xs font-medium text-slate-400 border border-white/5 bg-white/[0.02]">
             <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span>{t.hero.priceTag}</span>
-          </div>
+          </div> */}
         </div>
 
         {/* 4. ИНТЕРАКТИВНЫЙ 3D-МАКЕТ ИНТЕРФЕЙСА */}
