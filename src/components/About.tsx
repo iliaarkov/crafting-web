@@ -23,7 +23,7 @@ export const About: React.FC = () => {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // 2. Расчет точного центра экрана относительно якорного слота
+  // 2. Расчет точного математического центра экрана относительно якорного слота
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -44,7 +44,7 @@ export const About: React.FC = () => {
       });
     };
 
-    const timer = setTimeout(measureOffset, 100);
+    const timer = setTimeout(measureOffset, 150);
     window.addEventListener('resize', measureOffset);
 
     return () => {
@@ -53,7 +53,7 @@ export const About: React.FC = () => {
     };
   }, [isDesktop]);
 
-  // 3. Плавный слушатель скролла для фаз анимации на ПК
+  // 3. Плавный слушатель скролла
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -84,51 +84,63 @@ export const About: React.FC = () => {
     };
   }, [isDesktop]);
 
-  // Фазы анимации для ПК
-  const summonEnter = Math.min(1, Math.max(0, (progress - 0.04) / 0.12));
-  const flyToSlot = Math.min(1, Math.max(0, (progress - 0.26) / 0.16));
-  const descEnter = Math.min(1, Math.max(0, (progress - 0.42) / 0.18));
-  const compareEnter = Math.min(1, Math.max(0, (progress - 0.60) / 0.20));
+  // ================= ФАЗЫ АНИМАЦИИ ДЛЯ ПК (min-h-[460vh]) ================= //
+  // Фаза 1: Призыв легендарной карты ровно в ЦЕНТРЕ (0.02 -> 0.12)
+  const summonEnter = Math.min(1, Math.max(0, (progress - 0.02) / 0.10));
 
-  // Панорамирование сцены вверх при появлении нижних карточек
-  const stagePanProgress = Math.min(1, Math.max(0, (progress - 0.48) / 0.32));
-  const stagePanY = stagePanProgress * 190;
+  // Фаза 2: Полет на свое место в левую колонку (0.14 -> 0.26)
+  const flyToSlot = Math.min(1, Math.max(0, (progress - 0.14) / 0.12));
 
-  // Координаты легендарной карты
+  // Фаза 3: Влет правого блока "Меня зовут Илья..." (0.20 -> 0.30)
+  const descEnter = Math.min(1, Math.max(0, (progress - 0.20) / 0.10));
+
+  // Фаза 4: ДЛИННАЯ ПАУЗА ДЛЯ ЧТЕНИЯ (0.30 -> 0.60)
+  // Блок стабильно стоит по вертикальному центру, пользователь спокойно читает без движения!
+
+  // Фаза 5: Плавный уход первой сцены вверх (0.60 -> 0.72)
+  const scene1Exit = Math.min(1, Math.max(0, (progress - 0.60) / 0.12));
+  const scene1Opacity = Math.max(0, 1 - scene1Exit);
+  const scene1TranslateY = -scene1Exit * 110;
+
+  // Фаза 6: Всплытие второй сцены "Кому подходит / не подходит" снизу в центр (0.64 -> 0.76)
+  const scene2Enter = Math.min(1, Math.max(0, (progress - 0.64) / 0.12));
+  const scene2Exit = Math.min(1, Math.max(0, (progress - 0.92) / 0.08));
+  const scene2Opacity = Math.max(0, scene2Enter - scene2Exit);
+  const scene2TranslateY = (1 - scene2Enter) * 90 - scene2Exit * 90;
+
+  // Координаты легендарной карты в Сцене 1
   const currentDeltaX = deltaOffset.x * (1 - flyToSlot);
   const currentDeltaY = deltaOffset.y * (1 - flyToSlot);
-  const currentScale = 0.85 + 0.2 * summonEnter - 0.05 * flyToSlot;
-  const currentRotateY = 20 * (1 - summonEnter);
-  const currentRotateX = 12 * (1 - summonEnter);
+  const currentScale = 0.88 + 0.16 * summonEnter - 0.04 * flyToSlot;
+  const currentRotateY = 18 * (1 - summonEnter);
+  const currentRotateX = 10 * (1 - summonEnter);
   const cardOpacity = summonEnter;
-  const isCentered = flyToSlot < 0.96;
+  const isCentered = flyToSlot < 0.95;
 
   return (
     <section
       id="about"
       ref={containerRef}
-      className={isDesktop ? 'relative min-h-[340vh]' : 'py-16 sm:py-24 relative overflow-hidden'}
+      className={isDesktop ? 'relative min-h-[460vh]' : 'py-16 sm:py-24 relative overflow-hidden'}
     >
-      {/* ДЕСКТОП: Липкий экран с панорамированием */}
+      {/* ДЕСКТОП: Липкий экран с двумя просторными сценами */}
       {isDesktop ? (
         <div
           ref={frameRef}
-          className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden pt-16 pb-8"
+          className="sticky top-0 h-screen w-full flex flex-col justify-center pt-24 pb-12 overflow-hidden"
         >
-          {/* Контейнер сцены, поднимающийся вверх при прокрутке */}
+          {/* ================= СЦЕНА 1: ПРОФИЛЬ + ОПИСАНИЕ ================= */}
           <div
-            className="max-w-6xl mx-auto px-4 sm:px-6 w-full transition-transform duration-150 ease-out"
+            className="w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-150 ease-out"
             style={{
-              transform: `translate3d(0, -${stagePanY}px, 0)`,
+              opacity: scene1Opacity,
+              transform: `translate3d(0, ${scene1TranslateY}px, 0)`,
+              pointerEvents: scene1Opacity > 0.4 ? 'auto' : 'none',
+              visibility: scene1Opacity <= 0 ? 'hidden' : 'visible',
             }}
           >
-            {/* Заголовок секции */}
-            <div
-              className="max-w-3xl mb-6 lg:mb-8 transition-opacity duration-300"
-              style={{
-                opacity: Math.max(0.2, 1 - stagePanProgress * 0.85),
-              }}
-            >
+            {/* Заголовок секции с запасом сверху */}
+            <div className="max-w-3xl mb-8">
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{t.header.nav.about}</span>
@@ -138,15 +150,15 @@ export const About: React.FC = () => {
               </h2>
             </div>
 
-            {/* Верхний ряд: Профиль (слева) + Описание (справа) */}
-            <div className="grid grid-cols-12 gap-8 mb-6 items-stretch relative">
+            {/* Сетка: Профиль (слева) + Описание (справа) — строго по вертикальному центру */}
+            <div className="grid grid-cols-12 gap-8 items-stretch relative">
               {/* Якорный слот левой колонки */}
               <div ref={profileSlotRef} className="col-span-4 relative min-h-[390px]">
                 {/* Легендарная карточка профиля */}
                 <div
                   className={`glass-panel p-6 rounded-3xl border flex flex-col justify-between items-center text-center relative overflow-hidden group transition-shadow duration-300 ${
                     isCentered
-                      ? 'z-40 shadow-[0_0_90px_rgba(34,211,238,0.4)] border-cyan-400/80 bg-[#070b13]/95 ring-2 ring-cyan-400/50'
+                      ? 'z-40 shadow-[0_0_100px_rgba(34,211,238,0.45)] border-cyan-400/80 bg-[#070b13]/95 ring-2 ring-cyan-400/50'
                       : 'shadow-2xl border-white/10 hover:border-cyan-400/40'
                   }`}
                   style={{
@@ -224,35 +236,35 @@ export const About: React.FC = () => {
                 </div>
               </div>
 
-              {/* Правая колонка: Описание и услуги */}
+              {/* Правая колонка: Описание и что могу разместить */}
               <div
-                className="col-span-8 flex flex-col gap-4"
+                className="col-span-8 flex flex-col gap-5"
                 style={{
                   opacity: descEnter,
-                  transform: `perspective(1000px) translateX(${(1 - descEnter) * 60}px) rotateY(${(1 - descEnter) * -10}deg)`,
+                  transform: `perspective(1000px) translateX(${(1 - descEnter) * 50}px) rotateY(${(1 - descEnter) * -8}deg)`,
                   transformOrigin: 'right center',
                   pointerEvents: descEnter > 0.5 ? 'auto' : 'none',
                   willChange: 'transform, opacity',
                 }}
               >
-                <div className="glass-panel p-6 rounded-3xl border border-white/10 flex-1 flex flex-col justify-between shadow-xl">
-                  <div className="space-y-3 text-slate-300 leading-relaxed text-sm sm:text-base">
+                <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 flex-1 flex flex-col justify-between shadow-xl">
+                  <div className="space-y-3.5 text-slate-300 leading-relaxed text-sm sm:text-base">
                     <p>{t.about.p1}</p>
                     <p className="text-slate-400">{t.about.p2}</p>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-3 text-cyan-300 text-sm font-medium">
+                  <div className="mt-5 pt-4 border-t border-white/5 flex items-center gap-3 text-cyan-300 text-sm font-medium">
                     <Users2 className="w-4 h-4 text-cyan-400 shrink-0" />
                     <span>{t.about.directComm}</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0c1017]/80 to-[#0e1624]/80 shadow-xl">
+                <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0c1017]/80 to-[#0e1624]/80 shadow-xl">
                   <div className="flex items-center gap-2 text-white font-semibold text-sm mb-3">
                     <Code2 className="w-4 h-4 text-cyan-400" />
                     <h3>{t.about.canIncludeTitle}</h3>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2.5">
                     {t.about.canIncludeList.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-slate-300 text-xs">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1 shrink-0" />
@@ -263,30 +275,43 @@ export const About: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Нижний ряд: Кому подходит vs Кому не подходит */}
-            <div
-              className="grid grid-cols-2 gap-6"
-              style={{
-                opacity: compareEnter,
-                transform: `perspective(1000px) translateY(${(1 - compareEnter) * 50}px) rotateX(${(1 - compareEnter) * 12}deg)`,
-                transformOrigin: 'bottom center',
-                pointerEvents: compareEnter > 0.5 ? 'auto' : 'none',
-                willChange: 'transform, opacity',
-              }}
-            >
+          {/* ================= СЦЕНА 2: КОМУ ПОДХОДИТ VS НЕ ПОДХОДИТ ================= */}
+          <div
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-200 ease-out"
+            style={{
+              opacity: scene2Opacity,
+              transform: `translate3d(0, calc(-50% + ${scene2TranslateY}px), 0)`,
+              pointerEvents: scene2Opacity > 0.4 ? 'auto' : 'none',
+              visibility: scene2Opacity <= 0 ? 'hidden' : 'visible',
+            }}
+          >
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{lang === 'ru' ? 'Формат работы' : 'Collaboration Style'}</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                {lang === 'ru'
+                  ? 'С кем я работаю и кому подойдёт сайт'
+                  : 'Who I work with and who this is for'}
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 items-stretch">
               {/* Кому подходит */}
-              <div className="glass-panel p-6 rounded-3xl border border-emerald-500/25 bg-[#091214]/70 shadow-2xl hover:border-emerald-500/40 transition-colors">
-                <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-base mb-4">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="glass-panel p-7 sm:p-8 rounded-3xl border border-emerald-500/30 bg-[#091316]/85 shadow-2xl hover:border-emerald-500/50 transition-colors">
+                <div className="flex items-center gap-3 text-emerald-400 font-bold text-lg mb-6">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                    <Check className="w-4 h-4 text-emerald-400" />
                   </div>
                   <h3>{t.about.whoIsItForTitle}</h3>
                 </div>
-                <ul className="space-y-2.5">
+                <ul className="space-y-4">
                   {t.about.whoIsItForList.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-slate-200 text-xs sm:text-sm">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                    <li key={idx} className="flex items-start gap-3 text-slate-200 text-sm sm:text-base">
+                      <Check className="w-4 h-4 text-emerald-400 mt-1 shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -294,17 +319,17 @@ export const About: React.FC = () => {
               </div>
 
               {/* Кому не подходит */}
-              <div className="glass-panel p-6 rounded-3xl border border-white/10 bg-[#120f12]/50 shadow-2xl hover:border-rose-500/30 transition-colors">
-                <div className="flex items-center gap-2.5 text-rose-400/90 font-bold text-base mb-4">
-                  <div className="w-6 h-6 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
-                    <X className="w-3.5 h-3.5 text-rose-400" />
+              <div className="glass-panel p-7 sm:p-8 rounded-3xl border border-rose-500/20 bg-[#140e12]/80 shadow-2xl hover:border-rose-500/40 transition-colors">
+                <div className="flex items-center gap-3 text-rose-400/90 font-bold text-lg mb-6">
+                  <div className="w-8 h-8 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                    <X className="w-4 h-4 text-rose-400" />
                   </div>
                   <h3>{t.about.whoIsNotForTitle}</h3>
                 </div>
-                <ul className="space-y-2.5">
+                <ul className="space-y-4">
                   {t.about.whoIsNotForList.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-slate-400 text-xs sm:text-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600 mt-1.5 shrink-0" />
+                    <li key={idx} className="flex items-start gap-3 text-slate-400 text-sm sm:text-base">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600 mt-2 shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -314,7 +339,7 @@ export const About: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* МОБИЛЬНЫЕ УСТРОЙСТВА: вертикальный поток */
+        /* ================= МОБИЛЬНЫЕ УСТРОЙСТВА ================= */
         <div className="max-w-xl mx-auto px-4 sm:px-6 space-y-6">
           <div className="mb-8">
             <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
