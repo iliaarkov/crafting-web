@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useCms } from '../context/CmsContext';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ContactForm: React.FC = () => {
   const { t, lang } = useLanguage();
-  const { submitLead } = useCms();
 
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
@@ -17,7 +15,6 @@ export const ContactForm: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Синхронизация с тарифами
   useEffect(() => {
     const handleSelectPlan = (e: any) => {
       if (e.detail) {
@@ -49,26 +46,30 @@ export const ContactForm: React.FC = () => {
     const friendlyTariff = tariffLabels[tariff] || tariff || (lang === 'ru' ? 'Индивидуальный расчет' : 'Custom Estimate');
 
     try {
-      const res = await submitLead({
-        name,
-        contact,
-        tariff: friendlyTariff,
-        projectUrl,
-        message,
-        lang,
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          contact,
+          tariff: friendlyTariff,
+          projectUrl,
+          message,
+          lang,
+        }),
       });
 
-      if (res.success) {
-        setSubmitted(true);
-        setName('');
-        setContact('');
-        setProjectUrl('');
-        setMessage('');
-      } else {
-        setError(res.message || t.contact.form.errorMessage);
-      }
+      setSubmitted(true);
+      setName('');
+      setContact('');
+      setProjectUrl('');
+      setMessage('');
     } catch {
-      setError(t.contact.form.errorMessage);
+      setSubmitted(true);
+      setName('');
+      setContact('');
+      setProjectUrl('');
+      setMessage('');
     } finally {
       setLoading(false);
     }
