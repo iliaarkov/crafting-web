@@ -17,9 +17,8 @@ import {
 export const Hero: React.FC = () => {
   const { t, lang } = useLanguage();
 
-  // Состояние 3D-параллакса от мыши (ПК) или гироскопа (смартфоны)
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [hasGyroscope, setHasGyroscope] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -35,8 +34,14 @@ export const Hero: React.FC = () => {
     }
   };
 
-  // 1. Интерактивный 3D-параллакс: курсор на ПК + гироскоп на мобильных
+  // 1. Адаптивная анимация: курсор на ПК, плавный скролл-параллакс на смартфонах
   useEffect(() => {
+    const isTouchDevice =
+      typeof window !== 'undefined' &&
+      ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches);
+
+    setIsTouch(isTouchDevice);
+
     let targetX = 0;
     let targetY = 0;
     let currentX = 0;
@@ -52,40 +57,43 @@ export const Hero: React.FC = () => {
 
     animationFrameId = requestAnimationFrame(updateInterpolatedTilt);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
-      const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
-      targetX = Math.max(-1, Math.min(1, x)) * 12;
-      targetY = Math.max(-1, Math.min(1, y)) * 12;
-    };
+    if (isTouchDevice) {
+      // НА ТЕЛЕФОНАХ: естественный стабильный параллакс от вертикального скролла
+      const handleScroll = () => {
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight || 800;
+        const scrollProgress = Math.min(1, Math.max(0, scrollY / (windowHeight * 0.9)));
+        targetY = (scrollProgress - 0.2) * 8;
+        targetX = 0;
+      };
 
-    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (e.gamma !== null && e.beta !== null) {
-        setHasGyroscope(true);
-        const clampedGamma = Math.max(-35, Math.min(35, e.gamma));
-        const clampedBeta = Math.max(-35, Math.min(35, e.beta - 45));
-        targetX = (clampedGamma / 35) * 10;
-        targetY = (clampedBeta / 35) * 10;
-      }
-    };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        window.removeEventListener('scroll', handleScroll);
+      };
+    } else {
+      // НА КОМПЬЮТЕРАХ: интерактивное следование за курсором мыши
+      const handleMouseMove = (e: MouseEvent) => {
+        const { innerWidth, innerHeight } = window;
+        const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
+        const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
+        targetX = Math.max(-1, Math.min(1, x)) * 12;
+        targetY = Math.max(-1, Math.min(1, y)) * 12;
+      };
 
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        window.removeEventListener('mousemove', handleMouseMove);
+      };
     }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (window.DeviceOrientationEvent) {
-        window.removeEventListener('deviceorientation', handleDeviceOrientation);
-      }
-    };
   }, []);
 
-  // 2. Интерактивная фоновая цифровая паутина / созвездие на Canvas
+  // 2. Интерактивная фоновая цифровая сетка на Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -103,13 +111,13 @@ export const Hero: React.FC = () => {
 
     window.addEventListener('resize', handleResize);
 
-    const particleCount = width < 768 ? 28 : 55;
+    const particleCount = width < 768 ? 24 : 50;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
-      radius: Math.random() * 1.6 + 0.8,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      radius: Math.random() * 1.5 + 0.8,
     }));
 
     let animId: number;
@@ -122,10 +130,10 @@ export const Hero: React.FC = () => {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const maxDist = width < 768 ? 95 : 140;
+          const maxDist = width < 768 ? 90 : 135;
 
           if (dist < maxDist) {
-            const alpha = (1 - dist / maxDist) * 0.22;
+            const alpha = (1 - dist / maxDist) * 0.2;
             ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
@@ -191,7 +199,7 @@ export const Hero: React.FC = () => {
         }}
       />
 
-      {/* 3. Фоновая декоративная сетка */}
+      {/* 3. Фоновая сетка */}
       <div
         className="absolute inset-0 opacity-[0.035] pointer-events-none -z-10"
         style={{
@@ -207,7 +215,7 @@ export const Hero: React.FC = () => {
           <span>{t.hero.badge}</span>
         </div>
 
-        {/* Главный заголовок H1 с акцентом */}
+        {/* Главный заголовок H1 */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.14] sm:leading-[1.12] mb-5 max-w-4xl mx-auto text-balance">
           {lang === 'ru' ? (
             <>
@@ -226,7 +234,7 @@ export const Hero: React.FC = () => {
           )}
         </h1>
 
-        {/* Короткий, цепляющий лид */}
+        {/* Короткий лид */}
         <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto mb-8 text-balance font-normal">
           {t.hero.description}
         </p>
@@ -249,22 +257,19 @@ export const Hero: React.FC = () => {
           >
             <span>{t.hero.ctaSecondary}</span>
           </a>
-
-          {/* <div className="hidden sm:flex items-center gap-2 px-4 py-3 rounded-full text-xs font-medium text-slate-400 border border-white/5 bg-white/[0.02]">
-            <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>{t.hero.priceTag}</span>
-          </div> */}
         </div>
 
-        {/* 4. ИНТЕРАКТИВНЫЙ 3D-МАКЕТ ИНТЕРФЕЙСА */}
+        {/* 4. ИНТЕРАКТИВНЫЙ МАКЕТ С КАРТИНКАМИ */}
         <div
           className="relative max-w-4xl mx-auto mb-16 perspective-[1200px]"
           style={{
-            transform: `perspective(1000px) rotateX(${tilt.y * -0.65}deg) rotateY(${tilt.x * 0.65}deg)`,
-            transition: 'transform 100ms ease-out',
+            transform: isTouch
+              ? `perspective(1000px) rotateX(${tilt.y * -0.5}deg)`
+              : `perspective(1000px) rotateX(${tilt.y * -0.65}deg) rotateY(${tilt.x * 0.65}deg)`,
+            transition: isTouch ? 'transform 180ms ease-out' : 'transform 100ms ease-out',
           }}
         >
-          {/* Плавающий бейдж: Заявка в Telegram (слева сверху) */}
+          {/* Плавающий бейдж: Заявка в Telegram */}
           <div
             className="hidden md:flex absolute -top-5 -left-6 z-20 items-center gap-2.5 px-4 py-2 rounded-2xl glass-panel border border-cyan-500/30 bg-[#090e17]/90 shadow-2xl text-xs font-semibold text-white shadow-cyan-950/60"
             style={{
@@ -284,7 +289,7 @@ export const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Плавающий бейдж: Мобильный адаптив (справа снизу) */}
+          {/* Плавающий бейдж: Мобильный адаптив */}
           <div
             className="hidden md:flex absolute -bottom-5 -right-6 z-20 items-center gap-2.5 px-4 py-2 rounded-2xl glass-panel border border-emerald-500/30 bg-[#090e17]/90 shadow-2xl text-xs font-semibold text-white shadow-emerald-950/60"
             style={{
@@ -304,7 +309,6 @@ export const Hero: React.FC = () => {
 
           {/* Стеклянное окно веб-интерфейса */}
           <div className="glass-panel rounded-3xl border border-white/15 bg-[#090d15]/95 shadow-2xl overflow-hidden text-left relative group">
-            {/* Оконная панель браузера */}
             <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between bg-[#0b101a]/90">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-rose-500/70" />
@@ -312,7 +316,6 @@ export const Hero: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
               </div>
 
-              {/* URL строка */}
               <div className="flex items-center gap-1.5 px-4 py-1 rounded-full bg-black/40 border border-white/10 text-[11px] text-slate-400 font-mono">
                 <Lock className="w-2.5 h-2.5 text-cyan-400" />
                 <span>iliaarkov.com / your-website</span>
@@ -324,89 +327,76 @@ export const Hero: React.FC = () => {
               </div>
             </div>
 
-            {/* Содержимое окна: сравнение Было vs Стало */}
-            <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-              {/* Левый блок: Проблема рутины */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-rose-500/20 flex flex-col justify-between">
+            {/* Картинки визуального сравнения (Было vs Стало) */}
+            <div className="p-4 sm:p-7 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+              {/* Левый блок: Было */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-rose-500/25 flex flex-col justify-between group/card hover:border-rose-500/40 transition-colors">
                 <div>
-                  <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wider mb-3">
-                    <XCircle className="w-4 h-4" />
-                    <span>{lang === 'ru' ? 'Было (без сайта)' : 'Before (No website)'}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wider">
+                      <XCircle className="w-4 h-4" />
+                      <span>{lang === 'ru' ? 'Было · без сайта' : 'Before · No website'}</span>
+                    </div>
+                    <span className="text-[11px] text-rose-300/70 font-medium">
+                      {lang === 'ru' ? 'Хаос в переписках' : 'Messy chat routine'}
+                    </span>
                   </div>
-                  <ul className="space-y-3 text-xs sm:text-sm text-slate-400">
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400/80 font-mono mt-0.5">•</span>
-                      <span>
-                        {lang === 'ru'
-                          ? 'Каждый раз скидывать прайсы в PDF или расписывать цены вручную'
-                          : 'Sending bulky price PDFs or typing prices manually every time'}
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400/80 font-mono mt-0.5">•</span>
-                      <span>
-                        {lang === 'ru'
-                          ? 'Отвечать на одни и те же вопросы о портфолио, сроках и условиях'
-                          : 'Repeatedly answering identical questions about work samples and timing'}
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400/80 font-mono mt-0.5">•</span>
-                      <span>
-                        {lang === 'ru'
-                          ? 'Клиенты теряются в долгих переписках в мессенджерах'
-                          : 'Potential clients drop off during slow message exchanges'}
-                      </span>
-                    </li>
-                  </ul>
+
+                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-rose-500/20 bg-slate-950 mb-4 shadow-inner">
+                    <img
+                      src="/images/before-chaos.jpg"
+                      alt={lang === 'ru' ? 'Хаос в переписках и мессенджерах' : 'Chaotic messaging and scattered price lists'}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14]/90 via-transparent to-transparent" />
+                    <div className="absolute bottom-2.5 left-3 right-3 text-[11px] text-rose-200/90 font-medium leading-snug">
+                      {lang === 'ru'
+                        ? 'Постоянная отправка PDF-файлов, ответы на одни и те же вопросы и потеря заявок в переписках'
+                        : 'Typing prices manually, sending PDFs, and losing clients in slow back-and-forth chats'}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-rose-500/10 text-[11px] text-rose-300/80 italic">
-                  {lang === 'ru' ? 'Рутина и потеря клиентов' : 'Routine and lost opportunities'}
+                <div className="pt-2 border-t border-rose-500/10 flex items-center justify-between text-[11px] text-rose-400/80">
+                  <span>{lang === 'ru' ? 'Трата времени на рутину' : 'Time lost on repetitive questions'}</span>
+                  <span className="text-xs">⏱️</span>
                 </div>
               </div>
 
-              {/* Правый блок: Решение с новым сайтом */}
-              <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-400/40 flex flex-col justify-between shadow-lg shadow-cyan-950/30">
+              {/* Правый блок: Стало */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-cyan-950/20 border border-cyan-400/40 flex flex-col justify-between shadow-lg shadow-cyan-950/40 group/card hover:border-cyan-400/70 transition-colors">
                 <div>
-                  <div className="flex items-center gap-2 text-cyan-300 font-bold text-xs uppercase tracking-wider mb-3">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                    <span>{lang === 'ru' ? 'Стало (с вашим сайтом)' : 'After (With your website)'}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-cyan-300 font-bold text-xs uppercase tracking-wider">
+                      <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                      <span>{lang === 'ru' ? 'Стало · с новым сайтом' : 'After · With your website'}</span>
+                    </div>
+                    <span className="text-[11px] text-emerald-300 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>{lang === 'ru' ? 'Работает 24/7' : '24/7 automation'}</span>
+                    </span>
                   </div>
-                  <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                      <span>
-                        <strong className="text-white">
-                          {lang === 'ru' ? 'Одна ссылка' : 'One link'}
-                        </strong>{' '}
-                        {lang === 'ru'
-                          ? 'в шапке профиля или визитке — всё понятно за 1 минуту'
-                          : 'in your bio or card — everything is clear in 60 seconds'}
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                      <span>
-                        {lang === 'ru'
-                          ? 'Услуги, честные цены и примеры работ разложены по полочкам'
-                          : 'Services, transparent rates, and portfolio structured neatly'}
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                      <span>
-                        {lang === 'ru'
-                          ? 'Клиент оставляет заявку в 1 клик, а вы получаете уведомление в Telegram'
-                          : 'Clients submit inquiries in 1 click, sent straight to your Telegram'}
-                      </span>
-                    </li>
-                  </ul>
+
+                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-cyan-400/30 bg-slate-950 mb-4 shadow-inner shadow-cyan-950/50">
+                    <img
+                      src="/images/after-website.jpg"
+                      alt={lang === 'ru' ? 'Современный сайт со структурой и заявками' : 'Clean structured website with instant Telegram leads'}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14]/90 via-transparent to-transparent" />
+                    <div className="absolute bottom-2.5 left-3 right-3 text-[11px] text-cyan-100 font-medium leading-snug">
+                      {lang === 'ru'
+                        ? 'Одна понятная ссылка: структурированные услуги, цены, портфолио и моментальное уведомление в Telegram'
+                        : 'One clear link: structured rates, portfolio, and instant lead alerts straight into Telegram'}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-cyan-500/20 flex items-center justify-between text-[11px] text-cyan-300 font-medium">
+                <div className="pt-2 border-t border-cyan-500/20 flex items-center justify-between text-[11px] text-cyan-300 font-medium">
                   <span>{t.hero.subDescription2}</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                 </div>
               </div>
             </div>
@@ -416,8 +406,8 @@ export const Hero: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
                 <span>
-                  {hasGyroscope
-                    ? (lang === 'ru' ? 'Наклоняйте смартфон для параллакса' : 'Tilt your phone for 3D parallax')
+                  {isTouch
+                    ? (lang === 'ru' ? 'Плавный параллакс при скролле страницы' : 'Smooth scroll parallax')
                     : (lang === 'ru' ? 'Двигайте курсором мыши для 3D-эффекта' : 'Move cursor for 3D parallax')}
                 </span>
               </div>
@@ -428,7 +418,7 @@ export const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* 5. Три карточки ключевых преимуществ */}
+        {/* 5. Карточки преимуществ */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
           <div className="glass-panel p-5 rounded-2xl flex items-center gap-4 border border-white/10 hover:border-cyan-500/30 transition-all hover:-translate-y-0.5">
             <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
