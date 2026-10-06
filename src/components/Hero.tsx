@@ -17,10 +17,13 @@ import {
 export const Hero: React.FC = () => {
   const { t, lang } = useLanguage();
 
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [isTouch, setIsTouch] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mockupRef = useRef<HTMLDivElement>(null);
+  const badgeLeftRef = useRef<HTMLDivElement>(null);
+  const badgeRightRef = useRef<HTMLDivElement>(null);
+
+  const [isTouch, setIsTouch] = useState(false);
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export const Hero: React.FC = () => {
     }
   };
 
-  // 1. Адаптивная анимация: курсор на ПК, плавный скролл-параллакс на смартфонах
+  // Аппаратно-ускоренный параллакс через прямые ref-мутации (БЕЗ перерендеров React, 60-120 FPS на Intel Mac)
   useEffect(() => {
     const isTouchDevice =
       typeof window !== 'undefined' &&
@@ -48,17 +51,32 @@ export const Hero: React.FC = () => {
     let currentY = 0;
     let animationFrameId: number;
 
-    const updateInterpolatedTilt = () => {
+    const renderLoop = () => {
       currentX += (targetX - currentX) * 0.08;
       currentY += (targetY - currentY) * 0.08;
-      setTilt({ x: currentX, y: currentY });
-      animationFrameId = requestAnimationFrame(updateInterpolatedTilt);
+
+      if (mockupRef.current) {
+        if (isTouchDevice) {
+          mockupRef.current.style.transform = `perspective(1000px) rotateX(${currentY * -0.5}deg)`;
+        } else {
+          mockupRef.current.style.transform = `perspective(1000px) rotateX(${currentY * -0.65}deg) rotateY(${currentX * 0.65}deg)`;
+        }
+      }
+
+      if (badgeLeftRef.current && !isTouchDevice) {
+        badgeLeftRef.current.style.transform = `translate3d(${currentX * 1.5}px, ${currentY * 1.5}px, 20px)`;
+      }
+
+      if (badgeRightRef.current && !isTouchDevice) {
+        badgeRightRef.current.style.transform = `translate3d(${currentX * -1.4}px, ${currentY * -1.4}px, 20px)`;
+      }
+
+      animationFrameId = requestAnimationFrame(renderLoop);
     };
 
-    animationFrameId = requestAnimationFrame(updateInterpolatedTilt);
+    animationFrameId = requestAnimationFrame(renderLoop);
 
     if (isTouchDevice) {
-      // НА ТЕЛЕФОНАХ: естественный стабильный параллакс от вертикального скролла
       const handleScroll = () => {
         const scrollY = window.scrollY;
         const windowHeight = window.innerHeight || 800;
@@ -75,13 +93,12 @@ export const Hero: React.FC = () => {
         window.removeEventListener('scroll', handleScroll);
       };
     } else {
-      // НА КОМПЬЮТЕРАХ: интерактивное следование за курсором мыши
       const handleMouseMove = (e: MouseEvent) => {
         const { innerWidth, innerHeight } = window;
         const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
         const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
-        targetX = Math.max(-1, Math.min(1, x)) * 12;
-        targetY = Math.max(-1, Math.min(1, y)) * 12;
+        targetX = Math.max(-1, Math.min(1, x)) * 10;
+        targetY = Math.max(-1, Math.min(1, y)) * 10;
       };
 
       window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -93,11 +110,11 @@ export const Hero: React.FC = () => {
     }
   }, []);
 
-  // 2. Интерактивная фоновая цифровая сетка на Canvas
+  // Облегчённый Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let width = (canvas.width = canvas.offsetWidth);
@@ -111,13 +128,13 @@ export const Hero: React.FC = () => {
 
     window.addEventListener('resize', handleResize);
 
-    const particleCount = width < 768 ? 24 : 50;
+    const particleCount = width < 768 ? 20 : 36;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      radius: Math.random() * 1.5 + 0.8,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      radius: Math.random() * 1.4 + 0.8,
     }));
 
     let animId: number;
@@ -130,12 +147,12 @@ export const Hero: React.FC = () => {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const maxDist = width < 768 ? 90 : 135;
+          const maxDist = width < 768 ? 85 : 125;
 
           if (dist < maxDist) {
-            const alpha = (1 - dist / maxDist) * 0.2;
+            const alpha = (1 - dist / maxDist) * 0.18;
             ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.lineWidth = 0.6;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -151,7 +168,7 @@ export const Hero: React.FC = () => {
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -173,33 +190,15 @@ export const Hero: React.FC = () => {
       ref={heroRef}
       className="relative min-h-[94vh] flex flex-col items-center justify-center pt-28 pb-16 lg:pt-36 lg:pb-28 overflow-hidden select-none"
     >
-      {/* 1. Живой интерактивный Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0"
       />
 
-      {/* 2. Атмосферные градиенты с параллаксом */}
-      <div
-        className="absolute top-1/4 left-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-cyan-600/20 via-sky-500/15 to-blue-700/10 blur-[140px] rounded-full pointer-events-none -z-10 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate(-50%, -50%) translate3d(${tilt.x * -1.5}px, ${tilt.y * -1.5}px, 0)`,
-        }}
-      />
-      <div
-        className="absolute top-1/3 right-5 w-[380px] h-[380px] bg-cyan-500/10 blur-[110px] rounded-full pointer-events-none -z-10 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate3d(${tilt.x * 1.8}px, ${tilt.y * 1.8}px, 0)`,
-        }}
-      />
-      <div
-        className="absolute bottom-10 left-5 w-[420px] h-[420px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none -z-10 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate3d(${tilt.x * -1.2}px, ${tilt.y * -1.2}px, 0)`,
-        }}
-      />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[400px] bg-gradient-to-tr from-cyan-600/20 via-sky-500/15 to-blue-700/10 blur-[85px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/3 right-5 w-[320px] h-[320px] bg-cyan-500/10 blur-[75px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute bottom-10 left-5 w-[360px] h-[360px] bg-blue-600/10 blur-[85px] rounded-full pointer-events-none -z-10" />
 
-      {/* 3. Фоновая сетка */}
       <div
         className="absolute inset-0 opacity-[0.035] pointer-events-none -z-10"
         style={{
@@ -209,13 +208,11 @@ export const Hero: React.FC = () => {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full text-center">
-        {/* Статус / Бейдж */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 mb-6 backdrop-blur-md shadow-lg shadow-cyan-950/40 hover:border-cyan-400/50 transition-colors">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <span>{t.hero.badge}</span>
         </div>
 
-        {/* Главный заголовок H1 */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.14] sm:leading-[1.12] mb-5 max-w-4xl mx-auto text-balance">
           {lang === 'ru' ? (
             <>
@@ -234,12 +231,10 @@ export const Hero: React.FC = () => {
           )}
         </h1>
 
-        {/* Короткий лид */}
         <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto mb-8 text-balance font-normal">
           {t.hero.description}
         </p>
 
-        {/* Кнопки призыва к действию */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
           <a
             href="#contact"
@@ -259,22 +254,18 @@ export const Hero: React.FC = () => {
           </a>
         </div>
 
-        {/* 4. ИНТЕРАКТИВНЫЙ МАКЕТ С КАРТИНКАМИ */}
         <div
+          ref={mockupRef}
           className="relative max-w-4xl mx-auto mb-16 perspective-[1200px]"
           style={{
-            transform: isTouch
-              ? `perspective(1000px) rotateX(${tilt.y * -0.5}deg)`
-              : `perspective(1000px) rotateX(${tilt.y * -0.65}deg) rotateY(${tilt.x * 0.65}deg)`,
-            transition: isTouch ? 'transform 180ms ease-out' : 'transform 100ms ease-out',
+            willChange: 'transform',
+            transformStyle: 'preserve-3d',
           }}
         >
-          {/* Плавающий бейдж: Заявка в Telegram */}
           <div
+            ref={badgeLeftRef}
             className="hidden md:flex absolute -top-5 -left-6 z-20 items-center gap-2.5 px-4 py-2 rounded-2xl glass-panel border border-cyan-500/30 bg-[#090e17]/90 shadow-2xl text-xs font-semibold text-white shadow-cyan-950/60"
-            style={{
-              transform: `translate3d(${tilt.x * 1.5}px, ${tilt.y * 1.5}px, 20px)`,
-            }}
+            style={{ willChange: 'transform' }}
           >
             <div className="w-7 h-7 rounded-lg bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-400">
               <Send className="w-3.5 h-3.5" />
@@ -289,12 +280,10 @@ export const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Плавающий бейдж: Мобильный адаптив */}
           <div
+            ref={badgeRightRef}
             className="hidden md:flex absolute -bottom-5 -right-6 z-20 items-center gap-2.5 px-4 py-2 rounded-2xl glass-panel border border-emerald-500/30 bg-[#090e17]/90 shadow-2xl text-xs font-semibold text-white shadow-emerald-950/60"
-            style={{
-              transform: `translate3d(${tilt.x * -1.4}px, ${tilt.y * -1.4}px, 20px)`,
-            }}
+            style={{ willChange: 'transform' }}
           >
             <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <Smartphone className="w-3.5 h-3.5" />
@@ -307,7 +296,6 @@ export const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Стеклянное окно веб-интерфейса */}
           <div className="glass-panel rounded-3xl border border-white/15 bg-[#090d15]/95 shadow-2xl overflow-hidden text-left relative group">
             <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between bg-[#0b101a]/90">
               <div className="flex items-center gap-2">
@@ -327,9 +315,7 @@ export const Hero: React.FC = () => {
               </div>
             </div>
 
-            {/* Картинки визуального сравнения (Было vs Стало) */}
             <div className="p-4 sm:p-7 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-              {/* Левый блок: Было */}
               <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-rose-500/25 flex flex-col justify-between group/card hover:border-rose-500/40 transition-colors">
                 <div>
                   <div className="flex items-center justify-between mb-3">
@@ -364,7 +350,6 @@ export const Hero: React.FC = () => {
                 </div>
               </div>
 
-              {/* Правый блок: Стало */}
               <div className="p-4 sm:p-5 rounded-2xl bg-cyan-950/20 border border-cyan-400/40 flex flex-col justify-between shadow-lg shadow-cyan-950/40 group/card hover:border-cyan-400/70 transition-colors">
                 <div>
                   <div className="flex items-center justify-between mb-3">
@@ -401,7 +386,6 @@ export const Hero: React.FC = () => {
               </div>
             </div>
 
-            {/* Подсказка внизу окна */}
             <div className="px-6 py-2.5 bg-black/40 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
               <div className="flex items-center gap-2">
                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
@@ -418,7 +402,6 @@ export const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* 5. Карточки преимуществ */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
           <div className="glass-panel p-5 rounded-2xl flex items-center gap-4 border border-white/10 hover:border-cyan-500/30 transition-all hover:-translate-y-0.5">
             <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
