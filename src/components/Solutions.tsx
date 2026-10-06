@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   X,
+  Bell,
 } from 'lucide-react';
 
 export const Solutions: React.FC = () => {
@@ -106,7 +107,7 @@ export const Solutions: React.FC = () => {
     },
   ];
 
-  // Отправка заявки в Telegram-бот и показ уведомления
+  // Отправка заявки в Telegram бот и запуск уведомления в стиле Telegram
   const handleCtaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactInput.trim() && !nameInput.trim()) return;
@@ -114,6 +115,7 @@ export const Solutions: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      // Отправка реального лида в бэкенд /api/lead (в Telegram бот)
       await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -126,18 +128,20 @@ export const Solutions: React.FC = () => {
         }),
       });
     } catch (err) {
-      // Игнорируем сетевые ошибки, чтобы UI-уведомление показалось в любом случае
+      // Игнорируем сетевые ошибки, чтобы UI-уведомление гарантированно показалось
     }
 
     setIsSubmitting(false);
     setCtaSent(true);
 
+    // Показываем нативное уведомление Telegram
     setNotification((prev) => ({
       ...prev,
       visible: true,
       time: lang === 'ru' ? 'сейчас' : 'now',
     }));
 
+    // Автоматическое исчезновение через 5.5 секунд
     const timer = setTimeout(() => {
       setNotification((prev) => ({ ...prev, visible: false }));
       setCtaSent(false);
@@ -165,6 +169,7 @@ export const Solutions: React.FC = () => {
           {notification.platform === 'ios' && (
             <div className="fixed top-3 inset-x-3 z-[9999] max-w-sm mx-auto animate-in slide-in-from-top-6 duration-300 ease-out">
               <div className="bg-[#1c1c1e]/95 backdrop-blur-2xl border border-white/20 rounded-[24px] p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.7)] text-left flex items-start gap-3">
+                {/* Иконка Telegram iOS */}
                 <div className="w-10 h-10 rounded-2xl bg-[#229ED9] flex items-center justify-center shrink-0 shadow-md">
                   <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.06-.19-.07-.05-.17-.03-.24-.02-.11.02-1.79 1.14-5.06 3.35-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.86-.44-.75-.24-1.34-.37-1.29-.79.03-.22.33-.44.9-.68 3.55-1.55 5.92-2.57 7.12-3.08 3.39-1.42 4.1-1.66 4.56-1.67.1 0 .33.02.48.15.12.11.16.26.17.37-.01.07.01.24 0 .34z" />
@@ -180,7 +185,7 @@ export const Solutions: React.FC = () => {
                   </div>
                   <div className="text-[11px] text-slate-300 leading-snug line-clamp-2">
                     {lang === 'ru'
-                      ? 'Потенциальный клиент только что отправил заявку на ваш продукт. Откройте чат для ответа.'
+                      ? 'Потенциальный клиент только что отправил заявку на разработку. Откройте чат для ответа.'
                       : 'A potential client has just submitted an inquiry. Open chat to view.'}
                   </div>
                 </div>
@@ -496,14 +501,14 @@ export const Solutions: React.FC = () => {
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
                     placeholder={lang === 'ru' ? 'Ваше имя / ФИО' : 'Full Name / Name'}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400/60 transition-colors"
+                    className="w-full px-3 py-2 sm:py-1.5 rounded-xl bg-white/5 border border-white/10 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400/60 transition-colors"
                   />
                   <input
                     type="text"
                     value={contactInput}
                     onChange={(e) => setContactInput(e.target.value)}
                     placeholder={lang === 'ru' ? '@username, email или телефон' : '@username, email or phone'}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400/60 transition-colors"
+                    className="w-full px-3 py-2 sm:py-1.5 rounded-xl bg-white/5 border border-white/10 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400/60 transition-colors"
                   />
                   <button
                     type="submit"
