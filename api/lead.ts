@@ -49,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           `🔗 <b>Ссылка / Проект:</b> ${data.projectUrl || 'Нет'}\n` +
           `📝 <b>Описание:</b>\n${data.message || 'Без описания'}\n\n` +
           `🌐 <b>Язык сайта:</b> ${data.lang || 'ru'}\n` +
-          `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`;
+          `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Tbilisi' })}`;
 
         const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
           method: 'POST',

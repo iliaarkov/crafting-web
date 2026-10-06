@@ -180,7 +180,7 @@ export const Solutions: React.FC = () => {
                   </div>
                   <div className="text-[11px] text-slate-300 leading-snug line-clamp-2">
                     {lang === 'ru'
-                      ? 'Потенциальный клиент только что отправил заявку на разработку. Откройте чат для ответа.'
+                      ? 'Потенциальный клиент только что отправил заявку на ваш продукт. Откройте чат для ответа.'
                       : 'A potential client has just submitted an inquiry. Open chat to view.'}
                   </div>
                 </div>
