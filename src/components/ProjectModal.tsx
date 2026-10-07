@@ -55,8 +55,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
       '/projects/intuitivo-3.png',
       '/projects/intuitivo-4.png',
       '/projects/intuitivo-5.png',
-      '/projects/intuitivo-6.png',
-      '/projects/intuitivo-mobile.png',
     ],
     'driving-center': [
       '/projects/driftet.png',
