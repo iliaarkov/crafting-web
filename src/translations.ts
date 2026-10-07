@@ -454,9 +454,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/portfolio-2.jpg',
             '/projects/portfolio-3.jpg',
             '/projects/portfolio-4.jpg',
-            '/projects/portfolio-5.jpg',
-            '/projects/portfolio-6.jpg',
-            '/projects/portfolio-mobile.jpg',
           ],
         },
         {
@@ -512,8 +509,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/intuitivo-3.png',
             '/projects/intuitivo-4.png',
             '/projects/intuitivo-5.png',
-            '/projects/intuitivo-6.png',
-            '/projects/intuitivo-mobile.png',
           ],
         },
         {
@@ -541,7 +536,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/driftet-4.png',
             '/projects/driftet-5.png',
             '/projects/driftet-6.png',
-            '/projects/driftet-mobile.png',
           ],
         },
       ],
@@ -1008,9 +1002,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/portfolio-2.jpg',
             '/projects/portfolio-3.jpg',
             '/projects/portfolio-4.jpg',
-            '/projects/portfolio-5.jpg',
-            '/projects/portfolio-6.jpg',
-            '/projects/portfolio-mobile.jpg',
           ],
         },
         {
@@ -1066,8 +1057,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/intuitivo-3.png',
             '/projects/intuitivo-4.png',
             '/projects/intuitivo-5.png',
-            '/projects/intuitivo-6.png',
-            '/projects/intuitivo-mobile.png',
           ],
         },
         {
@@ -1095,7 +1084,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/driftet-4.png',
             '/projects/driftet-5.png',
             '/projects/driftet-6.png',
-            '/projects/driftet-mobile.png',
           ],
         },
       ],
