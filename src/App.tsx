@@ -8,7 +8,7 @@ import { TechStack } from './components/TechStack';
 import { Process } from './components/Process';
 import { Projects } from './components/Projects';
 import { Pricing } from './components/Pricing';
-import { WhyCheaper } from './components/WhyCheaper';
+import { Guarantees } from './components/Guarantees';
 import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -26,7 +26,7 @@ export default function App() {
           <Process />
           <Projects />
           <Pricing />
-          <WhyCheaper />
+          <Guarantees />
           <ContactForm />
         </main>
         <Footer />

@@ -13,9 +13,10 @@ export const Header: React.FC = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
+      // Detect if user has scrolled past top
       setHasScrolled(currentScrollY > 20);
 
-      // Скрывается при скролле вниз, появляется при скролле вверх
+      // Hide on scroll down, show on scroll up
       if (currentScrollY > lastScrollY && currentScrollY > 80) {
         setIsVisible(false);
         setMobileMenuOpen(false);
@@ -40,7 +41,7 @@ export const Header: React.FC = () => {
     { label: t.header.nav.process, href: '#process' },
     { label: t.header.nav.projects, href: '#projects' },
     { label: t.header.nav.pricing, href: '#pricing' },
-    { label: t.header.nav.whyCheaper, href: '#why-cheaper' },
+    { label: lang === 'ru' ? 'Гарантии' : 'Guarantees', href: '#guarantees' },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -70,7 +71,7 @@ export const Header: React.FC = () => {
               : 'bg-[#0b0e14]/70 backdrop-blur-md border border-white/5'
           }`}
         >
-          {/* Бренд */}
+          {/* Brand Wordmark */}
           <a
             href="#"
             className="flex items-center gap-2 group text-base sm:text-lg font-bold tracking-tight text-white hover:text-cyan-400 transition-colors whitespace-nowrap"
@@ -79,7 +80,7 @@ export const Header: React.FC = () => {
             <span>{t.header.name}</span>
           </a>
 
-          {/* Меню на десктопе */}
+          {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs xl:text-sm font-medium text-slate-300">
             {navItems.map((item, idx) => (
               <a
@@ -93,9 +94,9 @@ export const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Действия: Язык + Обсудить проект */}
+          {/* Actions: Language Switcher + CTA */}
           <div className="flex items-center gap-3">
-            {/* Переключатель языков */}
+            {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
               aria-label="Switch Language"
@@ -107,7 +108,7 @@ export const Header: React.FC = () => {
               <span className={lang === 'en' ? 'text-cyan-300' : 'text-slate-400'}>EN</span>
             </button>
 
-            {/* Главная кнопка */}
+            {/* Primary Action Button */}
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, '#contact')}
@@ -117,7 +118,7 @@ export const Header: React.FC = () => {
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
 
-            {/* Гамбургер меню */}
+            {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-full bg-white/5 text-slate-300 hover:text-white border border-white/10"
@@ -128,7 +129,7 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Выпадающее мобильное меню */}
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden mt-2 p-5 rounded-2xl glass-panel border border-white/10 shadow-2xl flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-200">
             <nav className="flex flex-col gap-3">

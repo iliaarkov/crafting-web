@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Sparkles, CheckCircle, ExternalLink } from 'lucide-react';
 
 interface TechToolLink {
+  id: string; // имя файла в /public/tech/${id}.svg или .png
   name: string;
   url: string;
   title: string;
   iconBg: string;
-  renderIcon: () => React.ReactNode;
+  renderFallback: () => React.ReactNode;
 }
 
 interface TechCardData {
@@ -19,6 +20,36 @@ interface TechCardData {
   descriptionEn: string;
   tools: TechToolLink[];
 }
+
+/**
+ * Компонент иконки технологии:
+ * Автоматически поддерживает файлы из /public/tech/:
+ * Сначала пробует ${id}.svg, при ошибке ${id}.png, затем .webp.
+ * Если файл еще не загружен — отображает чистый встроенный векторный fallback.
+ */
+const TechIconImage: React.FC<{
+  id: string;
+  alt: string;
+  fallback: () => React.ReactNode;
+}> = ({ id, alt, fallback }) => {
+  const [extIdx, setExtIdx] = useState<number>(0);
+  const extensions = ['.svg', '.png', '.webp'];
+
+  if (extIdx >= extensions.length) {
+    return <>{fallback()}</>;
+  }
+
+  const src = `/tech/${id}${extensions[extIdx]}`;
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-5 h-5 object-contain select-none pointer-events-none transition-transform group-hover/tool:scale-110"
+      onError={() => setExtIdx((prev) => prev + 1)}
+    />
+  );
+};
 
 export const TechStack: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -46,11 +77,12 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Powers instantaneous page responses without full reloads, fluid transitions, and a modular architecture.',
       tools: [
         {
+          id: 'react',
           name: 'React',
           url: 'https://react.dev',
           title: lang === 'ru' ? 'Официальный сайт React (react.dev)' : 'Official React website (react.dev)',
           iconBg: 'bg-[#0a1524] border border-[#00d8ff]/30 hover:border-[#00d8ff] hover:shadow-[0_0_15px_rgba(0,216,255,0.4)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="-11.5 -10.23174 23 20.46348" className="w-5 h-5 fill-none stroke-[#00d8ff] stroke-[1.3]">
               <ellipse rx="11" ry="4.2" />
               <ellipse rx="11" ry="4.2" transform="rotate(60)" />
@@ -70,12 +102,13 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Eliminates runtime software bugs ahead of time, ensuring rock-solid stability across every browser and device.',
       tools: [
         {
+          id: 'typescript',
           name: 'TypeScript',
           url: 'https://www.typescriptlang.org',
           title: lang === 'ru' ? 'Официальный сайт TypeScript (typescriptlang.org)' : 'Official TypeScript website (typescriptlang.org)',
-          iconBg: 'bg-[#3178c6] border border-[#3178c6]/50 hover:border-white hover:shadow-[0_0_15px_rgba(49,120,198,0.5)]',
-          renderIcon: () => (
-            <span className="text-white font-extrabold font-mono text-[13px] tracking-tight">
+          iconBg: 'bg-[#152e4d] border border-[#3178c6]/50 hover:border-white hover:shadow-[0_0_15px_rgba(49,120,198,0.5)]',
+          renderFallback: () => (
+            <span className="text-[#3178c6] font-extrabold font-mono text-[13px] tracking-tight">
               TS
             </span>
           ),
@@ -91,13 +124,14 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Enables lightweight, custom layout styling without bloated CSS — looks pristine across every screen resolution.',
       tools: [
         {
+          id: 'tailwind',
           name: 'Tailwind CSS',
           url: 'https://tailwindcss.com',
           title: lang === 'ru' ? 'Официальный сайт Tailwind CSS (tailwindcss.com)' : 'Official Tailwind CSS website (tailwindcss.com)',
           iconBg: 'bg-[#081a26] border border-[#38bdf8]/35 hover:border-[#38bdf8] hover:shadow-[0_0_15px_rgba(56,189,248,0.4)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#38bdf8]">
-              <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z" />
+              <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C4.336 17.818 5.697 19.2 8.671 19.2c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z" />
             </svg>
           ),
         },
@@ -112,11 +146,12 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Handles instant lead routing directly into Telegram bots, form validations, and secure automated notifications.',
       tools: [
         {
+          id: 'node',
           name: 'Node.js',
           url: 'https://nodejs.org',
           title: lang === 'ru' ? 'Официальный сайт Node.js (nodejs.org)' : 'Official Node.js website (nodejs.org)',
           iconBg: 'bg-[#0a2014] border border-[#22c55e]/30 hover:border-[#22c55e] hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#22c55e]">
               <path d="M12 2L3.5 6.9v9.8L12 21.6l8.5-4.9V6.9L12 2zm0 2.3l6.5 3.8v7.6L12 19.5 5.5 15.7V8.1L12 4.3z" />
               <path d="M10.2 9.2h3.6v1.8h-1.8v3.8h-1.8V9.2z" fill="#22c55e" />
@@ -134,11 +169,12 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Safely stores client requests, service catalogs, and user accounts with automated backups and strict integrity.',
       tools: [
         {
+          id: 'postgres',
           name: 'PostgreSQL',
           url: 'https://www.postgresql.org',
           title: lang === 'ru' ? 'Официальный сайт PostgreSQL (postgresql.org)' : 'Official PostgreSQL website (postgresql.org)',
           iconBg: 'bg-[#0a1b2d] border border-[#336791]/40 hover:border-[#41b0ff] hover:shadow-[0_0_15px_rgba(65,176,255,0.4)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#41b0ff]">
               <path d="M12 2C6.48 2 2 4.02 2 6.5s4.48 4.5 10 4.5 10-2.02 10-4.5S17.52 2 12 2zm0 6.5c-4.41 0-8-1.34-8-2.5S7.59 3.5 12 3.5s8 1.34 8 2.5-3.59 2.5-8 2.5z" />
               <path d="M2 9.5c0 1.95 3.13 3.61 7.5 4.19v2.06C5.07 15.22 2 13.29 2 11V9.5zm20 0V11c0 2.29-3.07 4.22-7.5 4.75v-2.06c4.37-.58 7.5-2.24 7.5-4.19z" />
@@ -157,22 +193,24 @@ export const TechStack: React.FC = () => {
       descriptionEn: 'Delivers instant global page loading, automated SSL certificates, and uninterrupted 24/7 uptime.',
       tools: [
         {
+          id: 'cloudflare',
           name: 'Cloudflare',
           url: 'https://www.cloudflare.com',
           title: lang === 'ru' ? 'Официальный сайт Cloudflare (cloudflare.com)' : 'Official Cloudflare website (cloudflare.com)',
           iconBg: 'bg-[#1a120e] border border-[#f38020]/35 hover:border-[#f38020] hover:shadow-[0_0_15px_rgba(243,128,32,0.4)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#f38020]">
               <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
             </svg>
           ),
         },
         {
+          id: 'vercel',
           name: 'Vercel',
           url: 'https://vercel.com',
           title: lang === 'ru' ? 'Официальный сайт Vercel (vercel.com)' : 'Official Vercel website (vercel.com)',
           iconBg: 'bg-[#0f1117] border border-white/20 hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]',
-          renderIcon: () => (
+          renderFallback: () => (
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
               <path d="M12 1L24 22H0L12 1Z" />
             </svg>
@@ -280,7 +318,11 @@ export const TechStack: React.FC = () => {
                     title={tool.title}
                     className={`w-11 h-11 rounded-[13px] flex items-center justify-center shrink-0 shadow-md transition-all duration-200 cursor-pointer group/tool hover:scale-110 active:scale-95 ${tool.iconBg}`}
                   >
-                    {tool.renderIcon()}
+                    <TechIconImage
+                      id={tool.id}
+                      alt={tool.name}
+                      fallback={tool.renderFallback}
+                    />
                     <span className="sr-only">{tool.name}</span>
                   </a>
                 ))}
@@ -293,17 +335,17 @@ export const TechStack: React.FC = () => {
               </div>
 
               {/* 2. НАЗВАНИЕ ТЕХНОЛОГИИ (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
-              <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-cyan-200 transition-colors cursor-default select-none">
+              <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-cyan-200 transition-colors cursor-default select-none pointer-events-none">
                 {card.name}
               </h3>
 
               {/* 3. ПОДЗАГОЛОВОК (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
-              <div className="text-[13px] font-semibold text-slate-200 mt-1 leading-snug cursor-default select-none">
+              <div className="text-[13px] font-semibold text-slate-200 mt-1 leading-snug cursor-default select-none pointer-events-none">
                 {lang === 'ru' ? card.subtitleRu : card.subtitleEn}
               </div>
 
               {/* 4. ОПИСАНИЕ (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
-              <p className="text-xs sm:text-[13px] text-slate-400 mt-2.5 leading-relaxed cursor-default select-none">
+              <p className="text-xs sm:text-[13px] text-slate-400 mt-2.5 leading-relaxed cursor-default select-none pointer-events-none">
                 {lang === 'ru' ? card.descriptionRu : card.descriptionEn}
               </p>
             </div>
