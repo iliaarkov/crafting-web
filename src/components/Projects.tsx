@@ -17,6 +17,10 @@ export const Projects: React.FC = () => {
   const stickyStageRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Кешированные высоты карточек для предотвращения layout thrashing на мобильных
+  const cardHeightsRef = useRef<number[]>([]);
+  const lastWidthRef = useRef<number>(0);
+
   // Сопоставление с удобными картинками в public/projects/
   const cleanImageMap: Record<string, string> = {
     'specialist-portfolio': '/projects/portfolio.jpg',
@@ -38,6 +42,19 @@ export const Projects: React.FC = () => {
       });
     }
   };
+
+  // Измерение высоты карточек (вызывается только при монтировании и изменении ширины)
+  const measureCardHeights = useCallback((): number[] => {
+    const isMob = window.innerWidth < 1024;
+    const heights = cardRefs.current.map((el) => {
+      if (el && el.offsetHeight > 0) {
+        return el.offsetHeight;
+      }
+      return isMob ? 620 : 560;
+    });
+    cardHeightsRef.current = heights;
+    return heights;
+  }, []);
 
   // Расчет целевых положений карточек в стопке с проверкой нижней границы
   const computeStepStates = useCallback(
@@ -64,11 +81,8 @@ export const Projects: React.FC = () => {
         const candBottom = candTop + hi;
 
         if (candBottom <= maxBottom) {
-          // Карточка полностью помещается по высоте экрана
           currentTops.push(candTop);
         } else {
-          // Не помещается: стопка должна сдвинуться вверх на величину переполнения,
-          // чтобы нижняя линия текущей карточки была строго видима!
           const diff = candBottom - maxBottom;
           for (let j = 0; j < i; j++) {
             currentTops[j] -= diff;
@@ -83,7 +97,7 @@ export const Projects: React.FC = () => {
     [N]
   );
 
-  // Обновление положений всех карточек при скролле (прямой GPU-апдейт через translate3d)
+  // Обновление положений всех карточек при скролле (прямой GPU-апдейт через translate3d без layout thrashing)
   const updateCardPositions = useCallback(() => {
     if (!trackRef.current || N === 0) return;
 
@@ -92,76 +106,60 @@ export const Projects: React.FC = () => {
     const isMobileView = window.innerWidth < 1024;
 
     const distPerCard = Math.round(isMobileView ? viewportH * 0.75 : viewportH * 0.8);
+    const bufferDist = Math.round(isMobileView ? viewportH * 0.45 : viewportH * 0.5);
+    const totalScrollDist = Math.max(0, (N - 1) * distPerCard + bufferDist);
 
-    // Измеряем реальные высоты карточек
-    const measuredHeights = cardRefs.current.map(
-      (el) => (el ? el.offsetHeight : isMobileView ? 620 : 560)
-    );
+    // Используем кешированные высоты карточек — ни в коем случае не дергаем el.offsetHeight во время скролла!
+    let heights = cardHeightsRef.current;
+    if (!heights || heights.length !== N || heights.some((h) => h === 0)) {
+      heights = measureCardHeights();
+    }
 
-    const states = computeStepStates(measuredHeights, viewportH, isMobileView);
+    const states = computeStepStates(heights, viewportH, isMobileView);
     if (!states.length) return;
 
-    // Смещение скролла внутри трека:
-    // Когда trackRect.top <= 0, верх трека закрепился вверху вьюпорта
     const scrollOffset = Math.max(0, -trackRect.top);
+    const clampedOffset = Math.min(scrollOffset, totalScrollDist);
 
     const newY: number[] = new Array(N).fill(0);
 
     if (N === 1) {
       newY[0] = states[0].cardTops[0];
+    } else if (clampedOffset <= 0) {
+      // Выше начала трека: первая карточка на месте, остальные спрятаны ниже экрана
+      newY[0] = states[0].cardTops[0];
+      for (let m = 1; m < N; m++) {
+        newY[m] = viewportH + 40 + (m - 1) * 60;
+      }
+    } else if (clampedOffset >= (N - 1) * distPerCard) {
+      // Последний шаг завершен (буфер просмотра): все карточки зафиксированы в финальной стопке
+      for (let j = 0; j < N; j++) {
+        newY[j] = states[N - 1].cardTops[j];
+      }
     } else {
-      let isInsideTransition = false;
+      // Непрерывный математический расчет активного шага перехода (currentStep от 1 до N - 1)
+      const currentStep = Math.min(
+        N - 1,
+        Math.floor(clampedOffset / distPerCard) + 1
+      );
+      const start = (currentStep - 1) * distPerCard;
+      const p = Math.max(0, Math.min(1, (clampedOffset - start) / distPerCard));
 
-      for (let k = 1; k < N; k++) {
-        const start = (k - 1) * distPerCard;
-        const end = k * distPerCard;
-
-        if (scrollOffset <= start) {
-          if (k === 1) {
-            newY[0] = states[0].cardTops[0];
-            for (let m = 1; m < N; m++) {
-              newY[m] = viewportH + 40 + (m - 1) * 60;
-            }
-          }
-          isInsideTransition = true;
-          break;
-        } else if (scrollOffset >= end) {
-          if (k === N - 1) {
-            // Последний шаг завершен: все карточки зафиксированы в финальной стопке
-            for (let j = 0; j < N; j++) {
-              newY[j] = states[N - 1].cardTops[j];
-            }
-          }
-        } else {
-          // Находимся строго внутри перехода к карточке k
-          const p = (scrollOffset - start) / distPerCard;
-
-          // Предыдущие карточки (0..k-1) плавно сдвигаются вверх, если карточке k нужно место
-          for (let j = 0; j < k; j++) {
-            const fromY = states[k - 1].cardTops[j];
-            const toY = states[k].cardTops[j];
-            newY[j] = fromY + p * (toY - fromY);
-          }
-
-          // Карточка k плавно выплывает снизу к своему целевому месту
-          const entryStart = viewportH + 30;
-          const targetTop = states[k].cardTops[k];
-          newY[k] = (1 - p) * entryStart + p * targetTop;
-
-          // Следующие карточки (m > k) ждут за пределами экрана
-          for (let m = k + 1; m < N; m++) {
-            newY[m] = viewportH + 30 + (m - k) * 60;
-          }
-
-          isInsideTransition = true;
-          break;
-        }
+      // Карточки 0..currentStep-1: плавно интерполируют между states[currentStep-1] и states[currentStep]
+      for (let j = 0; j < currentStep; j++) {
+        const fromY = states[currentStep - 1].cardTops[j];
+        const toY = states[currentStep].cardTops[j];
+        newY[j] = fromY + p * (toY - fromY);
       }
 
-      if (!isInsideTransition && scrollOffset >= (N - 1) * distPerCard) {
-        for (let j = 0; j < N; j++) {
-          newY[j] = states[N - 1].cardTops[j];
-        }
+      // Карточка currentStep: плавно выплывает снизу к своему месту
+      const entryStart = viewportH + 30;
+      const targetTop = states[currentStep].cardTops[currentStep];
+      newY[currentStep] = (1 - p) * entryStart + p * targetTop;
+
+      // Карточки дальше (m > currentStep): ждут за пределами экрана
+      for (let m = currentStep + 1; m < N; m++) {
+        newY[m] = viewportH + 30 + (m - currentStep) * 60;
       }
     }
 
@@ -172,23 +170,44 @@ export const Projects: React.FC = () => {
         el.style.transform = `translate3d(0, ${Math.round(newY[i])}px, 0)`;
       }
     }
-  }, [N, computeStepStates]);
+  }, [N, computeStepStates, measureCardHeights]);
 
-  // Пересчет высоты трека и слушатели событий
+  // Слушатели событий и защита от постоянных ре-рендеров при смене размера тулбара iOS
   useEffect(() => {
-    const handleResize = () => {
+    lastWidthRef.current = window.innerWidth;
+    measureCardHeights();
+
+    const updateTrackDimensions = () => {
       const isMob = window.innerWidth < 1024;
       setIsMobile(isMob);
       const viewportH = window.innerHeight;
       const distPerCard = Math.round(isMob ? viewportH * 0.75 : viewportH * 0.8);
       const bufferDist = Math.round(isMob ? viewportH * 0.45 : viewportH * 0.5);
       const totalScrollDist = Math.max(0, (N - 1) * distPerCard + bufferDist);
-      setTrackHeight(totalScrollDist + viewportH);
+      const newHeight = totalScrollDist + viewportH;
 
+      setTrackHeight(newHeight);
+      measureCardHeights();
       updateCardPositions();
     };
 
-    handleResize();
+    updateTrackDimensions();
+
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      // КРИТИЧЕСКИ ВАЖНО ДЛЯ IPHONE / SAFARI / CHROME:
+      // При скролле вверх/вниз в мобильных браузерах адресная строка сворачивается/разворачивается,
+      // вызывая событие resize с изменением ТОЛЬКО innerHeight.
+      // Если innerWidth не изменился — НЕ пересчитываем trackHeight и НЕ вызываем setTrackHeight,
+      // так как это вызывает React re-render, перезагрузку блока и сброс скролла!
+      if (currentWidth === lastWidthRef.current) {
+        updateCardPositions();
+        return;
+      }
+      lastWidthRef.current = currentWidth;
+      updateTrackDimensions();
+    };
+
     window.addEventListener('resize', handleResize);
 
     let rafId: number | null = null;
@@ -203,7 +222,10 @@ export const Projects: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     // Первичный вызов для мгновенной расстановки карточек
-    const timer = setTimeout(updateCardPositions, 50);
+    const timer = setTimeout(() => {
+      measureCardHeights();
+      updateCardPositions();
+    }, 60);
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -211,7 +233,7 @@ export const Projects: React.FC = () => {
       clearTimeout(timer);
       if (rafId !== null) cancelAnimationFrame(rafId);
     };
-  }, [N, updateCardPositions]);
+  }, [N, measureCardHeights, updateCardPositions]);
 
   return (
     <section id="projects" className="py-20 lg:py-28 relative">
@@ -243,10 +265,10 @@ export const Projects: React.FC = () => {
         className="relative"
         style={{ height: `${trackHeight}px` }}
       >
-        {/* Sticky-контейнер: фиксируется на экране во время пролистывания стопки */}
+        {/* Sticky-контейнер: фиксируется на экране во время пролистывания стопки с 100dvh */}
         <div
           ref={stickyStageRef}
-          className="sticky top-0 h-screen w-full overflow-visible pointer-events-none"
+          className="sticky top-0 h-[100dvh] min-h-screen w-full overflow-visible pointer-events-none"
         >
           <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 relative h-full">
             {projects.map((project, idx) => {
@@ -254,8 +276,7 @@ export const Projects: React.FC = () => {
               const zIndex = 10 + idx;
 
               // Начальное положение до гидратации:
-              // Первая карточка на базовом отступе, остальные скрыты ниже экрана
-              const defaultTop = idx === 0 ? (isMobile ? 68 : 82) : 1000 + idx * 80;
+              const defaultTop = idx === 0 ? (isMobile ? 68 : 82) : 1200 + idx * 80;
 
               return (
                 <div
@@ -267,7 +288,7 @@ export const Projects: React.FC = () => {
                     transform: `translate3d(0, ${defaultTop}px, 0)`,
                     zIndex,
                   }}
-                  className="absolute inset-x-4 sm:inset-x-6 pointer-events-auto rounded-[26px] sm:rounded-[30px] bg-[#090d16] border border-white/[0.12] border-t-cyan-400/30 p-5 sm:p-7 lg:p-8 shadow-[0_-18px_40px_rgba(0,0,0,0.88),0_25px_50px_rgba(0,0,0,0.85)] will-change-transform"
+                  className="absolute inset-x-4 sm:inset-x-6 pointer-events-auto rounded-[26px] sm:rounded-[30px] bg-[#090d16] border border-white/[0.12] border-t-cyan-400/30 p-5 sm:p-7 lg:p-8 shadow-[0_-18px_40px_rgba(0,0,0,0.88),0_25px_50px_rgba(0,0,0,0.85)] will-change-transform [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
                 >
                   {/* 
                     1. ВЕРХНИЙ ИНДЕКСНЫЙ ЯРЛЫК (ФОЛДЕР-ПОЛОСКА):
@@ -318,7 +339,10 @@ export const Projects: React.FC = () => {
                             alt={project.title}
                             className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
                             referrerPolicy="no-referrer"
-                            onLoad={updateCardPositions}
+                            onLoad={() => {
+                              measureCardHeights();
+                              updateCardPositions();
+                            }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent opacity-60" />
 
