@@ -178,7 +178,7 @@ export const Process: React.FC = () => {
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
             {lang === 'ru'
-              ? 'Каждый этап прозрачен: от первого сообщения в Telegram до передачи доступов и запуска сайта.'
+              ? 'Каждый этап прозрачен: от первого сообщения до передачи доступов и запуска сайта.'
               : 'Clear milestones from the very first greeting to custom domain launch and keys handoff.'}
           </p>
         </div>
