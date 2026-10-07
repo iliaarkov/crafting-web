@@ -101,6 +101,7 @@ export interface Translations {
       whatDoneList: string[];
       btnText: string;
       image: string;
+      images?: string[];
     }[];
   };
   pricing: {
@@ -446,7 +447,17 @@ export const translations: Record<Language, Translations> = {
             'публикация на собственном домене.',
           ],
           btnText: 'Посмотреть проект',
-          image: '/src/assets/images/project_specialist_portfolio_1790937045952.jpg',
+          image: '/projects/portfolio.jpg',
+          images: [
+            '/projects/portfolio.jpg',
+            '/projects/portfolio-1.jpg',
+            '/projects/portfolio-2.jpg',
+            '/projects/portfolio-3.jpg',
+            '/projects/portfolio-4.jpg',
+            '/projects/portfolio-5.jpg',
+            '/projects/portfolio-6.jpg',
+            '/projects/portfolio-mobile.jpg',
+          ],
         },
         {
           id: 'nonprofit-redesign',
@@ -464,7 +475,11 @@ export const translations: Record<Language, Translations> = {
             'сайт подготовлен к дальнейшему развитию.',
           ],
           btnText: 'Посмотреть проект',
-          image: '/src/assets/images/project_nonprofit_redesign_1790937057546.jpg',
+          image: '/projects/nonprofit.jpg',
+          images: [
+            '/projects/nonprofit.jpg',
+            '/projects/nonprofit-1.jpg',
+          ],
         },
         {
           id: 'wine-coop',
@@ -483,7 +498,11 @@ export const translations: Record<Language, Translations> = {
             'серверная часть сайта.',
           ],
           btnText: 'Посмотреть экраны проекта',
-          image: '/src/assets/images/project_wine_cooperative_1790937069022.jpg',
+          image: '/projects/wine-coop.jpg',
+          images: [
+            '/projects/wine-coop.jpg',
+            '/projects/wine-coop-1.jpg',
+          ],
         },
         {
           id: 'driving-center',
@@ -501,7 +520,11 @@ export const translations: Record<Language, Translations> = {
             'адаптация под мобильные устройства.',
           ],
           btnText: 'Посмотреть концепцию',
-          image: '/src/assets/images/project_driving_center_1790937080215.jpg',
+          image: '/projects/driving-center.jpg',
+          images: [
+            '/projects/driving-center.jpg',
+            '/projects/driving-center-1.jpg',
+          ],
         },
       ],
     },
@@ -960,7 +983,17 @@ export const translations: Record<Language, Translations> = {
             'deployment on custom domain.',
           ],
           btnText: 'View Project',
-          image: '/src/assets/images/project_specialist_portfolio_1790937045952.jpg',
+          image: '/projects/portfolio.jpg',
+          images: [
+            '/projects/portfolio.jpg',
+            '/projects/portfolio-1.jpg',
+            '/projects/portfolio-2.jpg',
+            '/projects/portfolio-3.jpg',
+            '/projects/portfolio-4.jpg',
+            '/projects/portfolio-5.jpg',
+            '/projects/portfolio-6.jpg',
+            '/projects/portfolio-mobile.jpg',
+          ],
         },
         {
           id: 'nonprofit-redesign',
@@ -978,7 +1011,11 @@ export const translations: Record<Language, Translations> = {
             'prepared system for future growth.',
           ],
           btnText: 'View Project',
-          image: '/src/assets/images/project_nonprofit_redesign_1790937057546.jpg',
+          image: '/projects/nonprofit.jpg',
+          images: [
+            '/projects/nonprofit.jpg',
+            '/projects/nonprofit-1.jpg',
+          ],
         },
         {
           id: 'wine-coop',
@@ -997,7 +1034,11 @@ export const translations: Record<Language, Translations> = {
             'backend server architecture.',
           ],
           btnText: 'View Project Screens',
-          image: '/src/assets/images/project_wine_cooperative_1790937069022.jpg',
+          image: '/projects/wine-coop.jpg',
+          images: [
+            '/projects/wine-coop.jpg',
+            '/projects/wine-coop-1.jpg',
+          ],
         },
         {
           id: 'driving-center',
@@ -1015,7 +1056,11 @@ export const translations: Record<Language, Translations> = {
             'mobile optimization.',
           ],
           btnText: 'View Concept',
-          image: '/src/assets/images/project_driving_center_1790937080215.jpg',
+          image: '/projects/driving-center.jpg',
+          images: [
+            '/projects/driving-center.jpg',
+            '/projects/driving-center-1.jpg',
+          ],
         },
       ],
     },

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { ProjectModal, type ProjectData } from './ProjectModal';
+import { SmartImage } from './SmartImage';
 import { ArrowUpRight, Check, Eye, ExternalLink } from 'lucide-react';
 
 interface StepState {
@@ -326,15 +327,17 @@ export const Projects: React.FC = () => {
                             <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                           </div>
-                          <div className="text-[10px] text-slate-400 font-mono bg-black/40 px-2.5 py-0.5 rounded-md border border-white/5 truncate max-w-[180px]">
-                            https://{project.id}.com
+                          <div className="text-[10px] text-slate-400 font-mono bg-black/40 px-2.5 py-0.5 rounded-md border border-white/5 truncate max-w-[220px]">
+                            {project.id === 'specialist-portfolio'
+                              ? 'https://elizaveta-portfolio-beta.vercel.app'
+                              : `https://${project.id}.com`}
                           </div>
                           <ExternalLink className="w-3 h-3 text-slate-500" />
                         </div>
 
                         {/* Обложка проекта */}
                         <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
-                          <img
+                          <SmartImage
                             src={projectImg}
                             alt={project.title}
                             className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"

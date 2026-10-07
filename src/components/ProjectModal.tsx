@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { SmartImage } from './SmartImage';
 import { X, Check, ArrowRight } from 'lucide-react';
 
 export interface ProjectData {
@@ -29,29 +30,34 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
   const cleanImageMap: Record<string, string[]> = {
     'specialist-portfolio': [
       '/projects/portfolio.jpg',
-      '/projects/nonprofit.jpg',
-      '/projects/wine-coop.jpg',
+      '/projects/portfolio-1.jpg',
+      '/projects/portfolio-2.jpg',
+      '/projects/portfolio-3.jpg',
+      '/projects/portfolio-4.jpg',
+      '/projects/portfolio-5.jpg',
+      '/projects/portfolio-6.jpg',
+      '/projects/portfolio-mobile.jpg',
     ],
     'nonprofit-redesign': [
       '/projects/nonprofit.jpg',
-      '/projects/driving-center.jpg',
-      '/projects/portfolio.jpg',
+      '/projects/nonprofit-1.jpg',
     ],
     'wine-coop': [
       '/projects/wine-coop.jpg',
-      '/projects/portfolio.jpg',
-      '/projects/driving-center.jpg',
+      '/projects/wine-coop-1.jpg',
     ],
     'driving-center': [
       '/projects/driving-center.jpg',
-      '/projects/wine-coop.jpg',
-      '/projects/nonprofit.jpg',
+      '/projects/driving-center-1.jpg',
     ],
   };
 
-  // Список всех изображений для карусели
+  // Список всех изображений для карусели:
+  // Если в проекте явно передан массив без старых путей /src/assets/images/, используем его, иначе cleanImageMap
   const rawImages = project
-    ? cleanImageMap[project.id] || (project.images && project.images.length > 0 ? project.images : [project.image])
+    ? (project.images && project.images.length > 0 && !project.images.some(img => img.includes('/src/assets/images/')))
+      ? project.images
+      : cleanImageMap[project.id] || (project.images && project.images.length > 0 ? project.images : [project.image])
     : [];
 
   const N = rawImages.length;
@@ -256,7 +262,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
               >
                 {slides.map((imgSrc, sIdx) => (
                   <div key={sIdx} className="w-full h-full shrink-0 relative">
-                    <img
+                    <SmartImage
                       src={imgSrc}
                       alt={`${project.title} - фото ${sIdx}`}
                       className="w-full h-full object-cover pointer-events-none select-none"
