@@ -26,8 +26,8 @@ export const Projects: React.FC = () => {
   const cleanImageMap: Record<string, string> = {
     'specialist-portfolio': '/projects/portfolio.jpg',
     'nonprofit-redesign': '/projects/nonprofit.png',
-    'wine-coop': '/projects/wine-coop.png',
-    'driving-center': '/projects/driving-center.png',
+    'wine-coop': '/projects/intuitivo.png',
+    'driving-center': '/projects/driftet.png',
   };
 
   const projects = t.projects.items || [];
