@@ -65,8 +65,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
       '/projects/driftet-3.png',
       '/projects/driftet-4.png',
       '/projects/driftet-5.png',
-      '/projects/driftet-6.png',
-      '/projects/driftet-mobile.png',
     ],
   };
 
