@@ -26,8 +26,8 @@ export const Solutions: React.FC = () => {
     },
     {
       icon: HelpCircle,
-      badgeRu: 'Экономия 4+ часов в неделю',
-      badgeEn: 'Saves 4+ hours per week',
+      badgeRu: 'Экономия времени',
+      badgeEn: 'Time savings',
       titleRu: 'Ответы на ключевые вопросы заранее',
       titleEn: 'Pre-answering key client questions',
       descRu: 'Сайт заранее закрывает частые вопросы о сроках, порядке работы и условиях до первого контакта. Клиенты приходят на диалог уже подготовленными и лояльными.',

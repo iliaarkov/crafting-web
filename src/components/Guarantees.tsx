@@ -12,8 +12,8 @@ export const Guarantees: React.FC = () => {
       titleEn: 'Direct with Developer',
       badgeRu: 'Без посредников',
       badgeEn: 'No Middlemen',
-      descRu: 'Вы общаетесь напрямую со мной — без испорченного телефона, менеджеров и бюрократии. Любые вопросы и правки внедряются оперативно.',
-      descEn: 'Direct communication with the engineer building your site. No agency telephone game — instant clarity on every detail.',
+      descRu: 'Вы общаетесь напрямую со мной – без испорченного телефона, менеджеров и бюрократии. Любые вопросы и правки внедряются оперативно.',
+      descEn: 'Direct communication with the engineer building your site. No agency telephone game – instant clarity on every detail.',
     },
     {
       icon: Clock,
@@ -103,7 +103,6 @@ export const Guarantees: React.FC = () => {
 
                 <div className="mt-5 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
-                  <span>{lang === 'ru' ? 'Включено в договор' : 'Guaranteed in agreement'}</span>
                 </div>
               </div>
             );

@@ -275,7 +275,7 @@ export const Hero: React.FC = () => {
                 {lang === 'ru' ? 'Новая заявка!' : 'New Lead!'}
               </div>
               <div className="text-[10px] text-slate-400">
-                {lang === 'ru' ? 'Прямо в Telegram' : 'Direct to Telegram'}
+                {lang === 'ru' ? 'Прямо в мессенджер' : 'Direct in the messanger'}
               </div>
             </div>
           </div>
@@ -389,11 +389,6 @@ export const Hero: React.FC = () => {
             <div className="px-6 py-2.5 bg-black/40 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
               <div className="flex items-center gap-2">
                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                <span>
-                  {isTouch
-                    ? (lang === 'ru' ? 'Плавный параллакс при скролле страницы' : 'Smooth scroll parallax')
-                    : (lang === 'ru' ? 'Двигайте курсором мыши для 3D-эффекта' : 'Move cursor for 3D parallax')}
-                </span>
               </div>
               <span className="text-cyan-400 font-mono text-[10px]">
                 React &bull; TypeScript &bull; Tailwind
