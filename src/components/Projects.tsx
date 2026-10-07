@@ -25,9 +25,9 @@ export const Projects: React.FC = () => {
   // Сопоставление с удобными картинками в public/projects/
   const cleanImageMap: Record<string, string> = {
     'specialist-portfolio': '/projects/portfolio.jpg',
-    'nonprofit-redesign': '/projects/nonprofit.jpg',
-    'wine-coop': '/projects/wine-coop.jpg',
-    'driving-center': '/projects/driving-center.jpg',
+    'nonprofit-redesign': '/projects/nonprofit.png',
+    'wine-coop': '/projects/wine-coop.png',
+    'driving-center': '/projects/driving-center.png',
   };
 
   const projects = t.projects.items || [];
