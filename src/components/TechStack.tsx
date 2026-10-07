@@ -49,8 +49,8 @@ export const TechStack: React.FC = () => {
       name: 'Tailwind CSS',
       subtitleRu: 'Индивидуальный дизайн и адаптивность',
       subtitleEn: 'Bespoke Design & Mobile Scaling',
-      descriptionRu: 'Позволяет создавать чистую адаптивную верстку без раздутого кода – сайт идеально смотрится на смартфонах, планшетах и мониторах.',
-      descriptionEn: 'Enables lightweight, custom styling without CSS bloat – your layout looks pristine across every screen size.',
+      descriptionRu: 'Позволяет создавать чистую адаптивную верстку без раздутого кода — сайт идеально смотрится на смартфонах, планшетах и мониторах.',
+      descriptionEn: 'Enables lightweight, custom styling without CSS bloat — your layout looks pristine across every screen size.',
       iconBg: 'bg-[#081a26] border border-[#38bdf8]/30',
       renderIcon: () => (
         <svg viewBox="0 0 24 24" className="w-6 h-6 fill-[#38bdf8]">
@@ -62,8 +62,8 @@ export const TechStack: React.FC = () => {
       name: 'Node.js',
       subtitleRu: 'Серверная логика и отправка заявок',
       subtitleEn: 'Server Logic & Lead Dispatch',
-      descriptionRu: 'Отвечает за моментальную доставку заявок клиентов, валидацию контактных данных и интеграции.',
-      descriptionEn: 'Responsible for the immediate processing of customer enquiries, form validations, and secure webhook integrations.',
+      descriptionRu: 'Отвечает за моментальную доставку заявок клиентов прямо в Telegram-бот, валидацию контактных данных и интеграции.',
+      descriptionEn: 'Handles instant lead routing directly to Telegram bots, form validations, and secure webhook integrations.',
       iconBg: 'bg-[#0a2014] border border-[#22c55e]/30',
       renderIcon: () => (
         <svg viewBox="0 0 24 24" className="w-6 h-6 fill-[#22c55e]">
@@ -110,7 +110,7 @@ export const TechStack: React.FC = () => {
   ];
 
   return (
-    <section id="tech-stack" className="py-20 lg:py-28 relative">
+    <section id="tech-stack" className="py-20 lg:py-28 relative overflow-hidden">
       {/* Мягкие фоновые световые пятна */}
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[350px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[350px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
