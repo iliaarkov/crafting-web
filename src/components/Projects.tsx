@@ -328,9 +328,6 @@ export const Projects: React.FC = () => {
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                           </div>
                           <div className="text-[10px] text-slate-400 font-mono bg-black/40 px-2.5 py-0.5 rounded-md border border-white/5 truncate max-w-[220px]">
-                            {project.id === 'specialist-portfolio'
-                              ? 'https://elizaveta-portfolio-beta.vercel.app'
-                              : `https://${project.id}.com`}
                           </div>
                           <ExternalLink className="w-3 h-3 text-slate-500" />
                         </div>
