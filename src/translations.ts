@@ -464,10 +464,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/nonprofit-1.png',
             '/projects/nonprofit-2.png',
             '/projects/nonprofit-3.png',
-            '/projects/nonprofit-4.png',
-            '/projects/nonprofit-5.png',
-            '/projects/nonprofit-6.png',
-            '/projects/nonprofit-mobile.png',
           ],
         },
         {
@@ -995,10 +991,6 @@ export const translations: Record<Language, Translations> = {
             '/projects/nonprofit-1.png',
             '/projects/nonprofit-2.png',
             '/projects/nonprofit-3.png',
-            '/projects/nonprofit-4.png',
-            '/projects/nonprofit-5.png',
-            '/projects/nonprofit-6.png',
-            '/projects/nonprofit-mobile.png',
           ],
         },
         {
