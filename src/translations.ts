@@ -48,6 +48,7 @@ export interface Translations {
     intro1: string;
     intro2: string;
     items: {
+      badge: string;
       title: string;
       description: string;
     }[];
@@ -60,16 +61,30 @@ export interface Translations {
     }[];
   };
   tools: {
+    badge: string;
     title: string;
     intro: string;
+    officialLabel: string;
     items: {
+      id: string;
       name: string;
+      subtitle: string;
       description: string;
+      tools: {
+        id: string;
+        name: string;
+        url: string;
+        title: string;
+      }[];
     }[];
     signature: string;
   };
   process: {
+    badge: string;
     title: string;
+    intro: string;
+    stagePrefix: string;
+    finishBadge: string;
     steps: {
       number: string;
       title: string;
@@ -90,6 +105,12 @@ export interface Translations {
     btnViewScreens: string;
     btnViewConcept: string;
     modalClose: string;
+    previewLabel: string;
+    whatDoneFallback: string;
+    modalDiscuss: string;
+    modalDragHint: string;
+    modalSlideLabel: string;
+    modalPhotoLabel: string;
     items: {
       id: string;
       title: string;
@@ -144,6 +165,16 @@ export interface Translations {
       }[];
     };
   };
+  guarantees: {
+    badge: string;
+    title: string;
+    description: string;
+    items: {
+      badge: string;
+      title: string;
+      description: string;
+    }[];
+  };
   whyCheaper: {
     preTitle: string;
     title: string;
@@ -178,7 +209,16 @@ export interface Translations {
       successTitle: string;
       successMessage: string;
       errorMessage: string;
+      validationError: string;
       sendAnother: string;
+      tariffs: {
+        start: string;
+        optimal: string;
+        business: string;
+        redesign: string;
+        custom: string;
+        defaultEstimate: string;
+      };
     };
   };
   footer: {
@@ -188,6 +228,7 @@ export interface Translations {
     email: string;
     privacy: string;
     copyright: string;
+    cmsButton: string;
   };
   privacyModal: {
     title: string;
@@ -202,7 +243,26 @@ export interface Translations {
     p8: string;
     p9: string;
     p10: string;
-
+  };
+  cms: {
+    title: string;
+    leadsCount: string;
+    noLeads: string;
+    status: {
+      new: string;
+      in_progress: string;
+      completed: string;
+      archived: string;
+    };
+    telegramSettingsTitle: string;
+    telegramTokenLabel: string;
+    telegramChatIdLabel: string;
+    saveSettings: string;
+    savedToast: string;
+    testSend: string;
+    exportCsv: string;
+    clearLeads: string;
+    close: string;
   };
 }
 
@@ -276,28 +336,34 @@ export const translations: Record<Language, Translations> = {
       intro2: 'Отдельный сайт помогает собрать главное в одном месте и сделать знакомство с вашей услугой более понятным.',
       items: [
         {
-          title: 'Не нужно каждый раз отправлять прайс',
-          description: 'Клиент сможет самостоятельно посмотреть услуги, форматы и актуальные цены.',
+          badge: 'Без долгих переписок о ценах',
+          title: 'Прозрачные цены и условия на сайте',
+          description: 'Клиент самостоятельно знакомится с форматами работы, составом и актуальной стоимостью в один клик. Больше не нужно каждому отправлять прайс в личные сообщения.',
         },
         {
-          title: 'Меньше одинаковых вопросов',
-          description: 'На сайте можно заранее ответить, как проходит работа, что входит в стоимость, что нужно подготовить и какие действуют условия.',
+          badge: 'Экономия времени',
+          title: 'Ответы на ключевые вопросы заранее',
+          description: 'Сайт заранее закрывает частые вопросы о сроках, порядке работы и условиях до первого контакта. Клиенты приходят на диалог уже подготовленными и лояльными.',
         },
         {
-          title: 'Работы собраны в одном месте',
-          description: 'Портфолио не потеряется среди личных публикаций, историй и старых постов.',
+          badge: 'Кейсы всегда под рукой',
+          title: 'Единая витрина ваших лучших работ',
+          description: 'Профессиональная витрина проектов по одной постоянной ссылке. Работы не тонут в ленте личных сторис и соцсетей, а наглядно подтверждают ваш реальный уровень.',
         },
         {
-          title: 'Понятный следующий шаг',
-          description: 'После знакомства с услугами клиент сможет написать вам, заполнить форму или перейти к записи.',
+          badge: 'Быстрый заказ в 1 клик',
+          title: 'Понятный следующий шаг без барьеров',
+          description: 'Прямое целевое действие: быстрая запись в Telegram, WhatsApp или отправка заявки за 20 секунд. Клиент не путается в профиле и делает заказ сразу.',
         },
         {
-          title: 'Более оформленная подача бизнеса',
-          description: 'Отдельный сайт с собственным адресом помогает показать, что ваша работа – это организованная услуга, а не случайные заказы через личные сообщения.',
+          badge: 'Высокое доверие и статус',
+          title: 'Солидный статус и собственный домен',
+          description: 'Собственный сайт с уникальным адресом и SSL-защитой подтверждает надёжность, выгодно выделяет на фоне конкурентов и повышает средний чек.',
         },
         {
+          badge: '100% независимость 24/7',
           title: 'Вы не зависите только от социальной сети',
-          description: 'Сайт становится самостоятельной страницей бизнеса, ссылку на которую можно использовать в профиле, рекламе, сообщениях, визитках и других материалах.',
+          description: 'Сайт остаётся вашей собственной независимой площадкой, доступной 24/7 по постоянному адресу. Ссылку можно использовать в био, Telegram, рекламе, визитках и поиске.',
         },
       ],
     },
@@ -331,38 +397,110 @@ export const translations: Record<Language, Translations> = {
       ],
     },
     tools: {
+      badge: 'Tech Stack',
       title: 'Современные инструменты без лишней технической сложности',
       intro: 'Я использую технологии, которые позволяют создавать быстрые, адаптивные и удобные сайты. Вам необязательно разбираться в программировании – я объясню всё простыми словами.',
+      officialLabel: 'official',
       items: [
         {
+          id: 'react',
           name: 'React',
-          description: 'Отвечает за быстрый и интерактивный интерфейс сайта.',
+          subtitle: 'Быстрый и интерактивный интерфейс',
+          description: 'Обеспечивает моментальный отклик сайта без перезагрузки страниц, плавные анимации и удобную модульную структуру.',
+          tools: [
+            {
+              id: 'react',
+              name: 'React',
+              url: 'https://react.dev',
+              title: 'Официальный сайт React (react.dev)',
+            },
+          ],
         },
         {
+          id: 'typescript',
           name: 'TypeScript',
-          description: 'Помогает поддерживать код аккуратным и уменьшает вероятность технических ошибок.',
+          subtitle: 'Надёжность кода и защита от ошибок',
+          description: 'Исключает скрытые программные ошибки ещё на этапе разработки, гарантируя предсказуемую работу сайта во всех браузерах.',
+          tools: [
+            {
+              id: 'typescript',
+              name: 'TypeScript',
+              url: 'https://www.typescriptlang.org',
+              title: 'Официальный сайт TypeScript (typescriptlang.org)',
+            },
+          ],
         },
         {
+          id: 'tailwind',
           name: 'Tailwind CSS',
-          description: 'Позволяет создавать индивидуальный дизайн и точно адаптировать его под разные экраны.',
+          subtitle: 'Индивидуальный дизайн и адаптивность',
+          description: 'Позволяет создавать чистую адаптивную верстку без раздутого кода — сайт идеально смотрится на смартфонах, планшетах и мониторах.',
+          tools: [
+            {
+              id: 'tailwind',
+              name: 'Tailwind CSS',
+              url: 'https://tailwindcss.com',
+              title: 'Официальный сайт Tailwind CSS (tailwindcss.com)',
+            },
+          ],
         },
         {
+          id: 'nodejs',
           name: 'Node.js',
-          description: 'Используется, когда сайту нужны формы, серверная логика или дополнительные функции.',
+          subtitle: 'Серверная логика и отправка заявок',
+          description: 'Отвечает за моментальную доставку заявок клиентов прямо в Telegram-бот, валидацию контактных данных и интеграции.',
+          tools: [
+            {
+              id: 'node',
+              name: 'Node.js',
+              url: 'https://nodejs.org',
+              title: 'Официальный сайт Node.js (nodejs.org)',
+            },
+          ],
         },
         {
+          id: 'postgresql',
           name: 'PostgreSQL',
-          description: 'Подходит для хранения заявок, товаров, пользователей и другой информации.',
+          subtitle: 'Безопасное хранение данных',
+          description: 'Надёжно сохраняет историю заявок, каталоги услуг и пользователей с гарантией сохранности и структурированности информации.',
+          tools: [
+            {
+              id: 'postgres',
+              name: 'PostgreSQL',
+              url: 'https://www.postgresql.org',
+              title: 'Официальный сайт PostgreSQL (postgresql.org)',
+            },
+          ],
         },
         {
-          name: 'Cloudflare и Vercel',
-          description: 'Используются для защищённой публикации сайта, подключения домена и быстрой загрузки.',
+          id: 'cloudflare-vercel',
+          name: 'Cloudflare & Vercel',
+          subtitle: 'Скоростной CDN и защита 24/7',
+          description: 'Обеспечивают моментальное открытие сайта в любой точке мира, автоматический SSL-сертификат и защиту от сбоев 24/7.',
+          tools: [
+            {
+              id: 'cloudflare',
+              name: 'Cloudflare',
+              url: 'https://www.cloudflare.com',
+              title: 'Официальный сайт Cloudflare (cloudflare.com)',
+            },
+            {
+              id: 'vercel',
+              name: 'Vercel',
+              url: 'https://vercel.com',
+              title: 'Официальный сайт Vercel (vercel.com)',
+            },
+          ],
         },
       ],
       signature: 'Вы получите исходный код, доступы и работающий сайт на своём домене.',
     },
     process: {
+      badge: 'Маршрут от и до',
       title: 'От первой переписки до готового сайта',
+      intro: 'Каждый этап прозрачен: от первого сообщения до передачи доступов и запуска сайта.',
+      stagePrefix: 'Этап',
+      finishBadge: 'Финиш • Сайт в сети и готов к работе!',
       steps: [
         {
           number: '01',
@@ -415,6 +553,12 @@ export const translations: Record<Language, Translations> = {
       btnViewScreens: 'Посмотреть экраны проекта',
       btnViewConcept: 'Посмотреть концепцию',
       modalClose: 'Закрыть',
+      previewLabel: 'preview',
+      whatDoneFallback: 'Что сделано:',
+      modalDiscuss: 'Обсудить похожий проект',
+      modalDragHint: 'Тяните мышкой для листания',
+      modalSlideLabel: 'Слайд',
+      modalPhotoLabel: 'фото',
       items: [
         {
           id: 'specialist-portfolio',
@@ -440,6 +584,9 @@ export const translations: Record<Language, Translations> = {
             '/projects/portfolio-2.jpg',
             '/projects/portfolio-3.jpg',
             '/projects/portfolio-4.jpg',
+            '/projects/portfolio-5.jpg',
+            '/projects/portfolio-6.jpg',
+            '/projects/portfolio-mobile.jpg',
           ],
         },
         {
@@ -458,12 +605,15 @@ export const translations: Record<Language, Translations> = {
             'сайт подготовлен к дальнейшему развитию.',
           ],
           btnText: 'Посмотреть проект',
-          image: '/projects/nonprofit.webp',
+          image: '/projects/nonprofit.jpg',
           images: [
-            '/projects/nonprofit.webp',
-            '/projects/nonprofit-1.webp',
-            '/projects/nonprofit-2.webp',
-            '/projects/nonprofit-3.webp',
+            '/projects/nonprofit.jpg',
+            '/projects/nonprofit-1.jpg',
+            '/projects/nonprofit-2.jpg',
+            '/projects/nonprofit-3.jpg',
+            '/projects/nonprofit-4.jpg',
+            '/projects/nonprofit-5.jpg',
+            '/projects/nonprofit-mobile.jpg',
           ],
         },
         {
@@ -483,14 +633,10 @@ export const translations: Record<Language, Translations> = {
             'серверная часть сайта.',
           ],
           btnText: 'Посмотреть экраны проекта',
-          image: '/projects/intuitivo.webp',
+          image: '/projects/wine-coop.jpg',
           images: [
-            '/projects/intuitivo.webp',
-            '/projects/intuitivo-1.webp',
-            '/projects/intuitivo-2.webp',
-            '/projects/intuitivo-3.webp',
-            '/projects/intuitivo-4.webp',
-            '/projects/intuitivo-5.webp',
+            '/projects/wine-coop.jpg',
+            '/projects/wine-coop-1.jpg',
           ],
         },
         {
@@ -509,14 +655,10 @@ export const translations: Record<Language, Translations> = {
             'адаптация под мобильные устройства.',
           ],
           btnText: 'Посмотреть концепцию',
-          image: '/projects/driftet.webp',
+          image: '/projects/driving-center.jpg',
           images: [
-            '/projects/driftet.webp',
-            '/projects/driftet-1.webp',
-            '/projects/driftet-2.webp',
-            '/projects/driftet-3.webp',
-            '/projects/driftet-4.webp',
-            '/projects/driftet-5.webp',
+            '/projects/driving-center.jpg',
+            '/projects/driving-center-1.jpg',
           ],
         },
       ],
@@ -572,11 +714,12 @@ export const translations: Record<Language, Translations> = {
             'портфолио или примеры работ;',
             'этапы сотрудничества;',
             'блок частых вопросов;',
-            'форма заявки или запись через соц-сети/почту;',
+            'форма заявки или запись через Telegram/соц-сети;',
             'помощь в организации предоставленных материалов;',
             'базовая техническая SEO-настройка;',
+            'подключение аналитики;',
             'мобильная версия;',
-            'две крупные итерации правок;',
+            'две итерации правок;',
             '30 дней технической поддержки.',
           ],
           disclaimer: 'Подходит большинству экспертов и небольших компаний.',
@@ -660,6 +803,33 @@ export const translations: Record<Language, Translations> = {
         ],
       },
     },
+    guarantees: {
+      badge: 'Гарантии сотрудничества',
+      title: 'Всё для спокойного и надёжного запуска',
+      description: 'Прозрачные условия без агентской наценки, срывов сроков и передачи проекта третьим лицам.',
+      items: [
+        {
+          badge: 'Без посредников',
+          title: 'Напрямую с разработчиком',
+          description: 'Вы общаетесь напрямую со мной – без испорченного телефона, менеджеров и бюрократии. Любые вопросы и правки внедряются оперативно.',
+        },
+        {
+          badge: 'Точно в срок',
+          title: 'Быстрый запуск за 5–12 дней',
+          description: 'Чёткий согласованный план и готовый рабочий сайт в сети точно в оговорённый срок, без затягивания на месяцы.',
+        },
+        {
+          badge: 'Без скрытых доплат',
+          title: '100% фиксированная цена',
+          description: 'Состав работ и стоимость утверждаются до старта и не меняются. Никаких платных правок или растущих смет.',
+        },
+        {
+          badge: 'Гарантия и помощь',
+          title: 'Поддержка после запуска',
+          description: 'Бесплатное техническое сопровождение после релиза. Я остаюсь на связи, помогаю с настройками и отвечаю на вопросы.',
+        },
+      ],
+    },
     whyCheaper: {
       preTitle: 'Честно о стоимости',
       title: 'Почему сейчас дешевле обычной цены',
@@ -708,7 +878,16 @@ export const translations: Record<Language, Translations> = {
         successTitle: 'Заявка успешно отправлена!',
         successMessage: 'Спасибо за обращение. Я свяжусь с вами в ближайшее время для обсуждения деталей.',
         errorMessage: 'Произошла ошибка при отправке. Пожалуйста, напишите мне напрямую в Telegram.',
+        validationError: 'Пожалуйста, укажите ваше имя и контакт',
         sendAnother: 'Отправить ещё одну заявку',
+        tariffs: {
+          start: 'Тариф «СТАРТ» (39 000 ₽)',
+          optimal: 'Тариф «ОПТИМАЛЬНЫЙ» (69 000 ₽)',
+          business: 'Тариф «БИЗНЕС» (99 000 ₽)',
+          redesign: 'Переделка существующего сайта (от 49 000 ₽)',
+          custom: 'Другая задача / индивидуальный проект',
+          defaultEstimate: 'Индивидуальный расчет',
+        },
       },
     },
     footer: {
@@ -718,8 +897,9 @@ export const translations: Record<Language, Translations> = {
       email: 'hello@iliaarkov.com',
       privacy: 'Политика конфиденциальности',
       copyright: '© 2026 Илья Арьков',
+      cmsButton: 'Управление заявками (CMS)',
     },
-    privacyModal: {
+		privacyModal: {
 			title: 'Политика конфиденциальности',
 			close: 'Закрыть',
 			p1: 'Настоящая Политика конфиденциальности (далее — Политика) определяет порядок обработки персональных данных, которые сайт Ильи Арькова, расположенный по адресу https://iliaarkov.com (далее — Сайт), может получать от пользователей (далее — Пользователь) в процессе использования Сайта, в частности при отправке заявки на разработку сайта.',
@@ -733,6 +913,26 @@ export const translations: Record<Language, Translations> = {
 			p9: '8. Контактная информация. Все вопросы, связанные с обработкой персональных данных, включая запросы на доступ, уточнение, блокирование, уничтожение или отзыв согласия, следует направлять по адресу: hello@iliaarkov.com. Оператором персональных данных является Илья Арьков (физическое лицо, осуществляющее деятельность в качестве исполнителя услуг по разработке сайтов).',
 			p10: '9. Обновление Политики. Владелец Сайта вправе вносить изменения в настоящую Политику. Новая редакция вступает в силу с момента её размещения на Сайте, если иное не предусмотрено новой редакцией.',
 		},
+    cms: {
+      title: 'Панель управления заявками и CMS',
+      leadsCount: 'Всего заявок',
+      noLeads: 'Заявок пока нет. Новые заявки с формы сразу появятся здесь.',
+      status: {
+        new: 'Новая',
+        in_progress: 'В работе',
+        completed: 'Завершена',
+        archived: 'Архив',
+      },
+      telegramSettingsTitle: 'Настройки Telegram бота (резервные)',
+      telegramTokenLabel: 'Telegram Bot Token',
+      telegramChatIdLabel: 'Telegram Chat ID',
+      saveSettings: 'Сохранить настройки',
+      savedToast: 'Настройки сохранены',
+      testSend: 'Отправить тестовое уведомление',
+      exportCsv: 'Экспорт в CSV',
+      clearLeads: 'Очистить историю',
+      close: 'Закрыть панель',
+    },
   },
   en: {
     header: {
@@ -803,28 +1003,34 @@ export const translations: Record<Language, Translations> = {
       intro2: 'A standalone website brings all the essentials into one unified place, making your service offer crystal clear.',
       items: [
         {
-          title: 'No need to send price sheets repeatedly',
-          description: 'Clients can explore your service packages, scope, and current prices at their own pace.',
+          badge: 'Zero DMs about pricing',
+          title: 'Clear pricing and service tiers',
+          description: 'Clients explore packages, deliverables, and transparent rates in seconds. No more sending PDF price lists in repetitive DMs.',
         },
         {
-          title: 'Fewer repetitive inquiries',
-          description: 'Address in advance how the collaboration works, what is included, what the client needs to prepare, and key terms.',
+          badge: 'Time savings',
+          title: 'Pre-answering key client questions',
+          description: 'The site handles frequent questions about process, deadlines, and deliverables upfront, saving you 4+ hours every week.',
         },
         {
-          title: 'Portfolio gathered in one curated place',
-          description: 'Your case studies won’t get lost among personal posts, temporary stories, or old feeds.',
+          badge: 'Portfolio always accessible',
+          title: 'A unified showcase of your best work',
+          description: 'A structured portfolio link that immediately showcases your real expertise without getting buried in casual social feeds.',
         },
         {
-          title: 'Clear next step for the client',
-          description: 'After reviewing your services, the client can immediately message you, fill out an inquiry form, or book a consultation.',
+          badge: '1-click direct booking',
+          title: 'Frictionless next step for the client',
+          description: 'Clear call-to-action: fast direct booking via Telegram, WhatsApp, or a simple form in 20 seconds. Zero client friction.',
         },
         {
-          title: 'Professional business presentation',
-          description: 'A dedicated site with a custom domain signals that your work is an organized professional service, not random side-gigs in DMs.',
+          badge: 'High trust & authority',
+          title: 'Custom domain & solid reputation',
+          description: 'A dedicated domain with SSL encryption proves you run an established, trustworthy business and commands higher client fees.',
         },
         {
-          title: 'Independence from social media platforms',
-          description: 'Your website is an owned asset. Use your link across bio profiles, ad campaigns, email signatures, messages, and business cards.',
+          badge: '100% independence 24/7',
+          title: 'Independent from social platforms',
+          description: 'Your website remains your sovereign platform, live 24/7. Works seamlessly with Telegram, search engines, offline QR codes, and ads.',
         },
       ],
     },
@@ -858,38 +1064,110 @@ export const translations: Record<Language, Translations> = {
       ],
     },
     tools: {
+      badge: 'Tech Stack',
       title: 'Modern tech stack without unnecessary complexity',
       intro: 'I utilize proven technologies that yield ultra-fast, responsive, and reliable websites. You do not need to understand code – I explain everything in simple, clear terms.',
+      officialLabel: 'official',
       items: [
         {
+          id: 'react',
           name: 'React',
-          description: 'Powers the snappy, interactive, and seamless user interface.',
+          subtitle: 'Fast & Snappy User Interface',
+          description: 'Powers instantaneous page responses without full reloads, fluid transitions, and a modular architecture.',
+          tools: [
+            {
+              id: 'react',
+              name: 'React',
+              url: 'https://react.dev',
+              title: 'Official React website (react.dev)',
+            },
+          ],
         },
         {
+          id: 'typescript',
           name: 'TypeScript',
-          description: 'Ensures bulletproof code quality and eliminates runtime errors.',
+          subtitle: 'Strict Typing & Bug Protection',
+          description: 'Eliminates runtime software bugs ahead of time, ensuring rock-solid stability across every browser and device.',
+          tools: [
+            {
+              id: 'typescript',
+              name: 'TypeScript',
+              url: 'https://www.typescriptlang.org',
+              title: 'Official TypeScript website (typescriptlang.org)',
+            },
+          ],
         },
         {
+          id: 'tailwind',
           name: 'Tailwind CSS',
-          description: 'Enables tailored bespoke styling optimized for any viewport.',
+          subtitle: 'Custom Design & Fluid Mobile Scaling',
+          description: 'Enables lightweight, custom layout styling without bloated CSS — looks pristine across every screen resolution.',
+          tools: [
+            {
+              id: 'tailwind',
+              name: 'Tailwind CSS',
+              url: 'https://tailwindcss.com',
+              title: 'Official Tailwind CSS website (tailwindcss.com)',
+            },
+          ],
         },
         {
+          id: 'nodejs',
           name: 'Node.js',
-          description: 'Handles server endpoints, secure lead routing, and custom logic.',
+          subtitle: 'Backend Logic & Instant Telegram Alerts',
+          description: 'Handles instant lead routing directly into Telegram bots, form validations, and secure automated notifications.',
+          tools: [
+            {
+              id: 'node',
+              name: 'Node.js',
+              url: 'https://nodejs.org',
+              title: 'Official Node.js website (nodejs.org)',
+            },
+          ],
         },
         {
+          id: 'postgresql',
           name: 'PostgreSQL',
-          description: 'Secure database storage for customer leads, catalogs, and records.',
+          subtitle: 'Secure Relational Data Storage',
+          description: 'Safely stores client requests, service catalogs, and user accounts with automated backups and strict integrity.',
+          tools: [
+            {
+              id: 'postgres',
+              name: 'PostgreSQL',
+              url: 'https://www.postgresql.org',
+              title: 'Official PostgreSQL website (postgresql.org)',
+            },
+          ],
         },
         {
+          id: 'cloudflare-vercel',
           name: 'Cloudflare & Vercel',
-          description: 'Ensures lightning-fast global CDN delivery, automated SSL, and 99.9% uptime.',
+          subtitle: 'High-Speed Edge CDN & 24/7 Uptime',
+          description: 'Delivers instant global page loading, automated SSL certificates, and uninterrupted 24/7 uptime.',
+          tools: [
+            {
+              id: 'cloudflare',
+              name: 'Cloudflare',
+              url: 'https://www.cloudflare.com',
+              title: 'Official Cloudflare website (cloudflare.com)',
+            },
+            {
+              id: 'vercel',
+              name: 'Vercel',
+              url: 'https://vercel.com',
+              title: 'Official Vercel website (vercel.com)',
+            },
+          ],
         },
       ],
       signature: 'You receive full source code ownership, credentials, and a working site on your own domain.',
     },
     process: {
+      badge: 'Project Roadmap',
       title: 'From initial message to a launched website',
+      intro: 'Clear milestones from the very first greeting to custom domain launch and keys handoff.',
+      stagePrefix: 'Stage',
+      finishBadge: 'Finish • Site is live and operational!',
       steps: [
         {
           number: '01',
@@ -942,6 +1220,12 @@ export const translations: Record<Language, Translations> = {
       btnViewScreens: 'View Project Screens',
       btnViewConcept: 'View Concept',
       modalClose: 'Close',
+      previewLabel: 'preview',
+      whatDoneFallback: 'Key features:',
+      modalDiscuss: 'Discuss similar project',
+      modalDragHint: 'Drag to slide',
+      modalSlideLabel: 'Slide',
+      modalPhotoLabel: 'photo',
       items: [
         {
           id: 'specialist-portfolio',
@@ -967,6 +1251,9 @@ export const translations: Record<Language, Translations> = {
             '/projects/portfolio-2.jpg',
             '/projects/portfolio-3.jpg',
             '/projects/portfolio-4.jpg',
+            '/projects/portfolio-5.jpg',
+            '/projects/portfolio-6.jpg',
+            '/projects/portfolio-mobile.jpg',
           ],
         },
         {
@@ -985,12 +1272,15 @@ export const translations: Record<Language, Translations> = {
             'prepared system for future growth.',
           ],
           btnText: 'View Project',
-          image: '/projects/nonprofit.webp',
+          image: '/projects/nonprofit.jpg',
           images: [
-            '/projects/nonprofit.webp',
-            '/projects/nonprofit-1.webp',
-            '/projects/nonprofit-2.webp',
-            '/projects/nonprofit-3.webp',
+            '/projects/nonprofit.jpg',
+            '/projects/nonprofit-1.jpg',
+            '/projects/nonprofit-2.jpg',
+            '/projects/nonprofit-3.jpg',
+            '/projects/nonprofit-4.jpg',
+            '/projects/nonprofit-5.jpg',
+            '/projects/nonprofit-mobile.jpg',
           ],
         },
         {
@@ -1010,14 +1300,10 @@ export const translations: Record<Language, Translations> = {
             'backend server architecture.',
           ],
           btnText: 'View Project Screens',
-          image: '/projects/intuitivo.webp',
+          image: '/projects/wine-coop.jpg',
           images: [
-            '/projects/intuitivo.webp',
-            '/projects/intuitivo-1.webp',
-            '/projects/intuitivo-2.webp',
-            '/projects/intuitivo-3.webp',
-            '/projects/intuitivo-4.webp',
-            '/projects/intuitivo-5.webp',
+            '/projects/wine-coop.jpg',
+            '/projects/wine-coop-1.jpg',
           ],
         },
         {
@@ -1036,14 +1322,10 @@ export const translations: Record<Language, Translations> = {
             'mobile optimization.',
           ],
           btnText: 'View Concept',
-          image: '/projects/driftet.webp',
+          image: '/projects/driving-center.jpg',
           images: [
-            '/projects/driftet.webp',
-            '/projects/driftet-1.webp',
-            '/projects/driftet-2.webp',
-            '/projects/driftet-3.webp',
-            '/projects/driftet-4.webp',
-            '/projects/driftet-5.webp',
+            '/projects/driving-center.jpg',
+            '/projects/driving-center-1.jpg',
           ],
         },
       ],
@@ -1061,21 +1343,21 @@ export const translations: Record<Language, Translations> = {
           name: 'START',
           subtitle: 'Landing / Card Website',
           audience: 'For specialists who need an elegant, clean single-page site with essential details.',
-          oldPrice: '$590',
-          currentPrice: '$420',
+          oldPrice: '55 000 ₽ ($590)',
+          currentPrice: '39 000 ₽ ($420)',
           currentPriceSub: 'Starter portfolio rate',
           duration: '5–7 business days',
           features: [
             'one focused page;',
-            'up to 6 content sections;',
+            'up to 5–6 content sections;',
             'about you or company info;',
             'services and contact info;',
-            'photos or portfolio;',
+            'photos or compact portfolio;',
             'direct contact button;',
             'responsive mobile version;',
             'domain & SSL configuration;',
-            'one big round of revisions;',
-            '30 days of technical support.',
+            'one round of revisions;',
+            '14 days of technical support.',
           ],
           disclaimer: 'Texts, images, and content are provided by the client.',
           btnText: 'Select "Start"',
@@ -1087,8 +1369,8 @@ export const translations: Record<Language, Translations> = {
           popularBadge: 'Best Value & Features',
           subtitle: 'Website for Expert or Small Business',
           audience: 'For businesses needing a detailed showcase of services, pricing, proof, and a streamlined inquiry flow.',
-          oldPrice: '$1,020',
-          currentPrice: '$740',
+          oldPrice: '95 000 ₽ ($1,020)',
+          currentPrice: '69 000 ₽ ($740)',
           currentPriceSub: 'Starter portfolio rate',
           duration: '8–12 business days',
           features: [
@@ -1102,6 +1384,7 @@ export const translations: Record<Language, Translations> = {
             'lead form or Telegram / Email / SM inquiry buttons;',
             'assistance structuring provided content;',
             'foundational technical SEO setup;',
+            'analytics integration (Google/Yandex);',
             'responsive mobile design;',
             'two rounds of revisions;',
             '30 days of technical support.',
@@ -1114,8 +1397,8 @@ export const translations: Record<Language, Translations> = {
           name: 'BUSINESS',
           subtitle: 'Website with Database & CMS Admin',
           audience: 'For ambitious projects requiring dynamic content management, databases, or high-volume lead pipelines.',
-          oldPrice: '$1,600',
-          currentPrice: '$1,050',
+          oldPrice: '150 000 ₽ ($1,600)',
+          currentPrice: '99 000 ₽ ($1,060)',
           currentPriceSub: 'Starter portfolio rate',
           duration: 'from 15 business days',
           features: [
@@ -1153,7 +1436,7 @@ export const translations: Record<Language, Translations> = {
           'lead forms and contact options;',
           'underlying modern code base.',
         ],
-        price: 'from $525',
+        price: 'from 49 000 ₽ ($525)',
         priceNote: 'Pricing depends on page count, current site condition, and content migration scope.',
         btnText: 'Show Existing Website',
       },
@@ -1186,6 +1469,33 @@ export const translations: Record<Language, Translations> = {
           },
         ],
       },
+    },
+    guarantees: {
+      badge: 'Collaboration Guarantees',
+      title: 'Everything for a smooth & reliable launch',
+      description: 'Transparent workflow without agency markups, missed deadlines, or outsourcing.',
+      items: [
+        {
+          badge: 'No Middlemen',
+          title: 'Direct with Developer',
+          description: 'Direct communication with the engineer building your site. No agency telephone game – instant clarity on every detail.',
+        },
+        {
+          badge: 'Strict Deadlines',
+          title: 'Fast 5–12 Day Launch',
+          description: 'A clear agreed roadmap and a live production site on schedule, without dragging projects out for months.',
+        },
+        {
+          badge: 'Zero Hidden Fees',
+          title: '100% Fixed Quote',
+          description: 'The scope of work and final price are locked in prior to kickoff. No surprise invoices or scope-creep price hikes.',
+        },
+        {
+          badge: 'Free Warranty',
+          title: 'Post-Launch Care',
+          description: 'Complimentary technical warranty after release. I stay available to help with configurations and questions.',
+        },
+      ],
     },
     whyCheaper: {
       preTitle: 'Honest About Pricing',
@@ -1235,7 +1545,16 @@ export const translations: Record<Language, Translations> = {
         successTitle: 'Inquiry Sent Successfully!',
         successMessage: 'Thank you for reaching out. I will review your project and get back to you shortly.',
         errorMessage: 'An error occurred during sending. Please message me directly on Telegram.',
+        validationError: 'Please provide your name and contact',
         sendAnother: 'Send another message',
+        tariffs: {
+          start: 'START Plan ($420 / 39,000 ₽)',
+          optimal: 'OPTIMAL Plan ($740 / 69,000 ₽)',
+          business: 'BUSINESS Plan ($1,060 / 99,000 ₽)',
+          redesign: 'Redesign of Existing Site (from $525)',
+          custom: 'Custom task / individual inquiry',
+          defaultEstimate: 'Custom Estimate',
+        },
       },
     },
     footer: {
@@ -1245,11 +1564,12 @@ export const translations: Record<Language, Translations> = {
       email: 'hello@iliaarkov.com',
       privacy: 'Privacy Policy',
       copyright: '© 2026 Ilia Arkov',
+      cmsButton: 'Lead Manager (CMS)',
     },
-    privacyModal: {
+		privacyModal: {
 			title: 'Privacy Policy',
 			close: 'Close',
-			p1: 'This Privacy Policy (hereinafter — the Policy) defines the procedure for processing personal data that may be collected by Ilia Arkov\'s website located at https://iliaarkov.com (hereinafter — the Site) from users (hereinafter — the User) during the use of the Site, in particular when submitting a request for website development.',
+			p1: 'This Privacy Policy (hereinafter — the Policy) defines the procedure for processing personal data that may be collected by Ilya Arkov\'s website located at https://iliaarkov.com (hereinafter — the Site) from users (hereinafter — the User) during the use of the Site, in particular when submitting a request for website development.',
 			p2: '1. Personal data processed. Within the Site\'s functionality, the User voluntarily provides the following personal data: name and contact details (Telegram username, phone number, or email address), and optionally — a project description and links to resources. Other data (including technical data such as IP address, browser information, cookies) may be collected automatically only to the extent necessary to ensure the Site\'s functionality.',
 			p3: '2. Purposes of processing. Personal data is processed exclusively for the following purposes: (a) contacting the User to discuss the terms of website development; (b) preparing a commercial proposal and agreeing on project details; (c) fulfilling arrangements arising from the User\'s inquiry.',
 			p4: '3. Legal basis for processing. Processing of personal data is carried out on the basis of the User\'s consent, expressed by completing and submitting the request form on the Site, in accordance with Part 1 Article 6 and Article 9 of Federal Law No. 152‑FZ dated 27.07.2006 "On Personal Data".',
@@ -1257,8 +1577,28 @@ export const translations: Record<Language, Translations> = {
 			p6: '5. Storage and processing periods. Personal data is stored only as a message in the Site owner\'s personal Telegram bot and is not saved in databases, CRM systems, or other storage facilities on the Site. The processing period is determined by the purpose of processing and lasts for the time necessary to contact the User and agree on the project, but not longer than required by applicable Russian legislation. Upon achievement of the processing purposes or at the User\'s request, the data shall be deleted.',
 			p7: '6. Security measures. The Site owner takes necessary organizational and technical measures to protect personal data against unauthorized or accidental access, destruction, alteration, blocking, copying, distribution, and other unlawful actions by third parties, in compliance with the requirements of Federal Law No. 152‑FZ.',
 			p8: '7. Rights of the data subject. The User has the right to: (a) request rectification, blocking, or deletion of their personal data if it is incomplete, outdated, inaccurate, or processed in violation of Federal Law No. 152‑FZ; (b) withdraw consent to the processing of personal data by sending a corresponding request to hello@iliaarkov.com; (c) obtain information about the processing of their personal data by sending a request to the specified email address.',
-			p9: '8. Contact information. All inquiries related to the processing of personal data, including requests for access, rectification, blocking, deletion, or withdrawal of consent, should be sent to: hello@iliaarkov.com. The personal data operator is Ilia Arkov (an individual providing website development services).',
+			p9: '8. Contact information. All inquiries related to the processing of personal data, including requests for access, rectification, blocking, deletion, or withdrawal of consent, should be sent to: hello@iliaarkov.com. The personal data operator is Ilya Arkov (an individual providing website development services).',
 			p10: '9. Policy updates. The Site owner reserves the right to amend this Policy. The new version becomes effective from the moment it is posted on the Site, unless otherwise specified in the new version.',
 		},
+    cms: {
+      title: 'Lead Management & CMS Dashboard',
+      leadsCount: 'Total Leads',
+      noLeads: 'No inquiries recorded yet. Submissions from the contact form will appear here in real-time.',
+      status: {
+        new: 'New',
+        in_progress: 'In Progress',
+        completed: 'Completed',
+        archived: 'Archived',
+      },
+      telegramSettingsTitle: 'Telegram Bot Configuration (Client Override)',
+      telegramTokenLabel: 'Telegram Bot Token',
+      telegramChatIdLabel: 'Telegram Chat ID',
+      saveSettings: 'Save Settings',
+      savedToast: 'Settings saved to LocalStorage',
+      testSend: 'Send Test Notification',
+      exportCsv: 'Export to CSV',
+      clearLeads: 'Clear Lead History',
+      close: 'Close Dashboard',
+    },
   },
 };

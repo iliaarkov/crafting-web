@@ -2,31 +2,89 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Sparkles, CheckCircle, ExternalLink } from 'lucide-react';
 
-interface TechToolLink {
-  id: string; // имя файла в /public/tech/${id}.svg или .png
-  name: string;
-  url: string;
-  title: string;
-  iconBg: string;
-  renderFallback: () => React.ReactNode;
-}
+const cosmicStars = [
+  { top: '10%', left: '15%', size: '2px', opacity: '0.6', delay: '0s' },
+  { top: '18%', left: '82%', size: '2.5px', opacity: '0.8', delay: '1s' },
+  { top: '25%', left: '45%', size: '1.5px', opacity: '0.5', delay: '2s' },
+  { top: '38%', left: '8%', size: '2px', opacity: '0.7', delay: '0.5s' },
+  { top: '50%', left: '94%', size: '2px', opacity: '0.6', delay: '1.5s' },
+  { top: '62%', left: '22%', size: '1.5px', opacity: '0.4', delay: '2.5s' },
+  { top: '72%', left: '76%', size: '2.5px', opacity: '0.7', delay: '0.8s' },
+  { top: '85%', left: '12%', size: '2px', opacity: '0.8', delay: '1.2s' },
+  { top: '90%', left: '65%', size: '1.5px', opacity: '0.5', delay: '2.2s' },
+];
 
-interface TechCardData {
-  id: string;
-  name: string;
-  subtitleRu: string;
-  subtitleEn: string;
-  descriptionRu: string;
-  descriptionEn: string;
-  tools: TechToolLink[];
-}
+const toolVisuals: Record<
+  string,
+  {
+    iconBg: string;
+    renderFallback: () => React.ReactNode;
+  }
+> = {
+  react: {
+    iconBg: 'bg-[#0a1524] border border-[#00d8ff]/30 hover:border-[#00d8ff] hover:shadow-[0_0_15px_rgba(0,216,255,0.4)]',
+    renderFallback: () => (
+      <svg viewBox="-11.5 -10.23174 23 20.46348" className="w-5 h-5 fill-none stroke-[#00d8ff] stroke-[1.3]">
+        <ellipse rx="11" ry="4.2" />
+        <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+        <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+        <circle r="2" fill="#00d8ff" />
+      </svg>
+    ),
+  },
+  typescript: {
+    iconBg: 'bg-[#152e4d] border border-[#3178c6]/50 hover:border-white hover:shadow-[0_0_15px_rgba(49,120,198,0.5)]',
+    renderFallback: () => (
+      <span className="text-[#3178c6] font-extrabold font-mono text-[13px] tracking-tight">
+        TS
+      </span>
+    ),
+  },
+  tailwind: {
+    iconBg: 'bg-[#081a26] border border-[#38bdf8]/35 hover:border-[#38bdf8] hover:shadow-[0_0_15px_rgba(56,189,248,0.4)]',
+    renderFallback: () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#38bdf8]">
+        <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C4.336 17.818 5.697 19.2 8.671 19.2c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z" />
+      </svg>
+    ),
+  },
+  node: {
+    iconBg: 'bg-[#0a2014] border border-[#22c55e]/30 hover:border-[#22c55e] hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]',
+    renderFallback: () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#22c55e]">
+        <path d="M12 2L3.5 6.9v9.8L12 21.6l8.5-4.9V6.9L12 2zm0 2.3l6.5 3.8v7.6L12 19.5 5.5 15.7V8.1L12 4.3z" />
+        <path d="M10.2 9.2h3.6v1.8h-1.8v3.8h-1.8V9.2z" fill="#22c55e" />
+      </svg>
+    ),
+  },
+  postgres: {
+    iconBg: 'bg-[#0a1b2d] border border-[#336791]/40 hover:border-[#41b0ff] hover:shadow-[0_0_15px_rgba(65,176,255,0.4)]',
+    renderFallback: () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#41b0ff]">
+        <path d="M12 2C6.48 2 2 4.02 2 6.5s4.48 4.5 10 4.5 10-2.02 10-4.5S17.52 2 12 2zm0 6.5c-4.41 0-8-1.34-8-2.5S7.59 3.5 12 3.5s8 1.34 8 2.5-3.59 2.5-8 2.5z" />
+        <path d="M2 9.5c0 1.95 3.13 3.61 7.5 4.19v2.06C5.07 15.22 2 13.29 2 11V9.5zm20 0V11c0 2.29-3.07 4.22-7.5 4.75v-2.06c4.37-.58 7.5-2.24 7.5-4.19z" />
+        <path d="M2 14c0 1.95 3.13 3.61 7.5 4.19v2.06C5.07 19.72 2 17.79 2 15.5V14zm20 0v1.5c0 2.29-3.07 4.22-7.5 4.75v-2.06c4.37-.58 7.5-2.24 7.5-4.19z" />
+      </svg>
+    ),
+  },
+  cloudflare: {
+    iconBg: 'bg-[#1a120e] border border-[#f38020]/35 hover:border-[#f38020] hover:shadow-[0_0_15px_rgba(243,128,32,0.4)]',
+    renderFallback: () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#f38020]">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
+      </svg>
+    ),
+  },
+  vercel: {
+    iconBg: 'bg-[#0f1117] border border-white/20 hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]',
+    renderFallback: () => (
+      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
+        <path d="M12 1L24 22H0L12 1Z" />
+      </svg>
+    ),
+  },
+};
 
-/**
- * Компонент иконки технологии:
- * Автоматически поддерживает файлы из /public/tech/:
- * Сначала пробует ${id}.svg, при ошибке ${id}.png, затем .webp.
- * Если файл еще не загружен — отображает чистый встроенный векторный fallback.
- */
 const TechIconImage: React.FC<{
   id: string;
   alt: string;
@@ -52,187 +110,17 @@ const TechIconImage: React.FC<{
 };
 
 export const TechStack: React.FC = () => {
-  const { t, lang } = useLanguage();
-
-  // Фиксированные координаты звезд для космического фона
-  const cosmicStars = [
-    { top: '10%', left: '15%', size: '2px', opacity: '0.6', delay: '0s' },
-    { top: '18%', left: '82%', size: '2.5px', opacity: '0.8', delay: '1s' },
-    { top: '25%', left: '45%', size: '1.5px', opacity: '0.5', delay: '2s' },
-    { top: '38%', left: '8%', size: '2px', opacity: '0.7', delay: '0.5s' },
-    { top: '50%', left: '94%', size: '2px', opacity: '0.6', delay: '1.5s' },
-    { top: '62%', left: '22%', size: '1.5px', opacity: '0.4', delay: '2.5s' },
-    { top: '72%', left: '76%', size: '2.5px', opacity: '0.7', delay: '0.8s' },
-    { top: '85%', left: '12%', size: '2px', opacity: '0.8', delay: '1.2s' },
-    { top: '90%', left: '65%', size: '1.5px', opacity: '0.5', delay: '2.2s' },
-  ];
-
-  const cards: TechCardData[] = [
-    {
-      id: 'react',
-      name: 'React',
-      subtitleRu: 'Быстрый и интерактивный интерфейс',
-      subtitleEn: 'Fast & Snappy User Interface',
-      descriptionRu: 'Обеспечивает моментальный отклик сайта без перезагрузки страниц, плавные анимации и удобную модульную структуру.',
-      descriptionEn: 'Powers instantaneous page responses without full reloads, fluid transitions, and a modular architecture.',
-      tools: [
-        {
-          id: 'react',
-          name: 'React',
-          url: 'https://react.dev',
-          title: lang === 'ru' ? 'Официальный сайт React (react.dev)' : 'Official React website (react.dev)',
-          iconBg: 'bg-[#0a1524] border border-[#00d8ff]/30 hover:border-[#00d8ff] hover:shadow-[0_0_15px_rgba(0,216,255,0.4)]',
-          renderFallback: () => (
-            <svg viewBox="-11.5 -10.23174 23 20.46348" className="w-5 h-5 fill-none stroke-[#00d8ff] stroke-[1.3]">
-              <ellipse rx="11" ry="4.2" />
-              <ellipse rx="11" ry="4.2" transform="rotate(60)" />
-              <ellipse rx="11" ry="4.2" transform="rotate(120)" />
-              <circle r="2" fill="#00d8ff" />
-            </svg>
-          ),
-        },
-      ],
-    },
-    {
-      id: 'typescript',
-      name: 'TypeScript',
-      subtitleRu: 'Надёжность кода и защита от ошибок',
-      subtitleEn: 'Strict Typing & Bug Protection',
-      descriptionRu: 'Исключает скрытые программные ошибки ещё на этапе разработки, гарантируя предсказуемую работу сайта во всех браузерах.',
-      descriptionEn: 'Eliminates runtime software bugs ahead of time, ensuring rock-solid stability across every browser and device.',
-      tools: [
-        {
-          id: 'typescript',
-          name: 'TypeScript',
-          url: 'https://www.typescriptlang.org',
-          title: lang === 'ru' ? 'Официальный сайт TypeScript (typescriptlang.org)' : 'Official TypeScript website (typescriptlang.org)',
-          iconBg: 'bg-[#152e4d] border border-[#3178c6]/50 hover:border-white hover:shadow-[0_0_15px_rgba(49,120,198,0.5)]',
-          renderFallback: () => (
-            <span className="text-[#3178c6] font-extrabold font-mono text-[13px] tracking-tight">
-              TS
-            </span>
-          ),
-        },
-      ],
-    },
-    {
-      id: 'tailwind',
-      name: 'Tailwind CSS',
-      subtitleRu: 'Индивидуальный дизайн и адаптивность',
-      subtitleEn: 'Custom Design & Fluid Mobile Scaling',
-      descriptionRu: 'Позволяет создавать чистую адаптивную верстку без раздутого кода — сайт идеально смотрится на смартфонах, планшетах и мониторах.',
-      descriptionEn: 'Enables lightweight, custom layout styling without bloated CSS — looks pristine across every screen resolution.',
-      tools: [
-        {
-          id: 'tailwind',
-          name: 'Tailwind CSS',
-          url: 'https://tailwindcss.com',
-          title: lang === 'ru' ? 'Официальный сайт Tailwind CSS (tailwindcss.com)' : 'Official Tailwind CSS website (tailwindcss.com)',
-          iconBg: 'bg-[#081a26] border border-[#38bdf8]/35 hover:border-[#38bdf8] hover:shadow-[0_0_15px_rgba(56,189,248,0.4)]',
-          renderFallback: () => (
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#38bdf8]">
-              <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C4.336 17.818 5.697 19.2 8.671 19.2c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z" />
-            </svg>
-          ),
-        },
-      ],
-    },
-    {
-      id: 'nodejs',
-      name: 'Node.js',
-      subtitleRu: 'Серверная логика и отправка заявок',
-      subtitleEn: 'Backend Logic & Instant Telegram Alerts',
-      descriptionRu: 'Отвечает за моментальную доставку заявок клиентов прямо в Telegram-бот, валидацию контактных данных и интеграции.',
-      descriptionEn: 'Handles instant lead routing directly into Telegram bots, form validations, and secure automated notifications.',
-      tools: [
-        {
-          id: 'node',
-          name: 'Node.js',
-          url: 'https://nodejs.org',
-          title: lang === 'ru' ? 'Официальный сайт Node.js (nodejs.org)' : 'Official Node.js website (nodejs.org)',
-          iconBg: 'bg-[#0a2014] border border-[#22c55e]/30 hover:border-[#22c55e] hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]',
-          renderFallback: () => (
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#22c55e]">
-              <path d="M12 2L3.5 6.9v9.8L12 21.6l8.5-4.9V6.9L12 2zm0 2.3l6.5 3.8v7.6L12 19.5 5.5 15.7V8.1L12 4.3z" />
-              <path d="M10.2 9.2h3.6v1.8h-1.8v3.8h-1.8V9.2z" fill="#22c55e" />
-            </svg>
-          ),
-        },
-      ],
-    },
-    {
-      id: 'postgresql',
-      name: 'PostgreSQL',
-      subtitleRu: 'Безопасное хранение данных',
-      subtitleEn: 'Secure Relational Data Storage',
-      descriptionRu: 'Надёжно сохраняет историю заявок, каталоги услуг и пользователей с гарантией сохранности и структурированности информации.',
-      descriptionEn: 'Safely stores client requests, service catalogs, and user accounts with automated backups and strict integrity.',
-      tools: [
-        {
-          id: 'postgres',
-          name: 'PostgreSQL',
-          url: 'https://www.postgresql.org',
-          title: lang === 'ru' ? 'Официальный сайт PostgreSQL (postgresql.org)' : 'Official PostgreSQL website (postgresql.org)',
-          iconBg: 'bg-[#0a1b2d] border border-[#336791]/40 hover:border-[#41b0ff] hover:shadow-[0_0_15px_rgba(65,176,255,0.4)]',
-          renderFallback: () => (
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#41b0ff]">
-              <path d="M12 2C6.48 2 2 4.02 2 6.5s4.48 4.5 10 4.5 10-2.02 10-4.5S17.52 2 12 2zm0 6.5c-4.41 0-8-1.34-8-2.5S7.59 3.5 12 3.5s8 1.34 8 2.5-3.59 2.5-8 2.5z" />
-              <path d="M2 9.5c0 1.95 3.13 3.61 7.5 4.19v2.06C5.07 15.22 2 13.29 2 11V9.5zm20 0V11c0 2.29-3.07 4.22-7.5 4.75v-2.06c4.37-.58 7.5-2.24 7.5-4.19z" />
-              <path d="M2 14c0 1.95 3.13 3.61 7.5 4.19v2.06C5.07 19.72 2 17.79 2 15.5V14zm20 0v1.5c0 2.29-3.07 4.22-7.5 4.75v-2.06c4.37-.58 7.5-2.24 7.5-4.19z" />
-            </svg>
-          ),
-        },
-      ],
-    },
-    {
-      id: 'cloudflare-vercel',
-      name: 'Cloudflare & Vercel',
-      subtitleRu: 'Скоростной CDN и защита 24/7',
-      subtitleEn: 'High-Speed Edge CDN & 24/7 Uptime',
-      descriptionRu: 'Обеспечивают моментальное открытие сайта в любой точке мира, автоматический SSL-сертификат и защиту от сбоев 24/7.',
-      descriptionEn: 'Delivers instant global page loading, automated SSL certificates, and uninterrupted 24/7 uptime.',
-      tools: [
-        {
-          id: 'cloudflare',
-          name: 'Cloudflare',
-          url: 'https://www.cloudflare.com',
-          title: lang === 'ru' ? 'Официальный сайт Cloudflare (cloudflare.com)' : 'Official Cloudflare website (cloudflare.com)',
-          iconBg: 'bg-[#1a120e] border border-[#f38020]/35 hover:border-[#f38020] hover:shadow-[0_0_15px_rgba(243,128,32,0.4)]',
-          renderFallback: () => (
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#f38020]">
-              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
-            </svg>
-          ),
-        },
-        {
-          id: 'vercel',
-          name: 'Vercel',
-          url: 'https://vercel.com',
-          title: lang === 'ru' ? 'Официальный сайт Vercel (vercel.com)' : 'Official Vercel website (vercel.com)',
-          iconBg: 'bg-[#0f1117] border border-white/20 hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]',
-          renderFallback: () => (
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
-              <path d="M12 1L24 22H0L12 1Z" />
-            </svg>
-          ),
-        },
-      ],
-    },
-  ];
+  const { t } = useLanguage();
 
   return (
     <section id="tech-stack" className="py-20 lg:py-28 relative border-t border-b border-white/5 overflow-hidden bg-[#04060a]">
-      {/* ================= КОСМИЧЕСКИЙ ФОН ИЗ БЛОКА ADVANTAGES ================= */}
-      {/* 1. Глубокие космические туманности */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-gradient-to-br from-indigo-900/15 via-purple-900/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-0 right-1/4 w-[650px] h-[450px] bg-gradient-to-tl from-cyan-950/25 via-blue-950/20 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[350px] bg-sky-900/10 blur-[160px] rounded-full pointer-events-none -z-10" />
 
-      {/* 2. Тонкие неоновые световые линии */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
       <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
 
-      {/* 3. Мерцающие космические звезды */}
       <div className="absolute inset-0 pointer-events-none -z-10">
         {cosmicStars.map((star, i) => (
           <div
@@ -253,11 +141,10 @@ export const TechStack: React.FC = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-        {/* Заголовок секции */}
         <div className="max-w-3xl mb-12 sm:mb-14 cursor-default select-none">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-3 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/20 backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Tech Stack</span>
+            <span>{t.tools.badge}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4 cursor-default select-none">
             {t.tools.title}
@@ -267,18 +154,13 @@ export const TechStack: React.FC = () => {
           </p>
         </div>
 
-        {/* ================= СЕТКА КАРТОЧЕК С ТОЧЕЧНОЙ СЕТКОЙ И ПЕРСПЕКТИВОЙ ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {cards.map((card) => (
+          {t.tools.items.map((card) => (
             <div
               key={card.id}
               className="group relative p-6 sm:p-7 rounded-2xl border border-white/10 bg-[#070b13]/85 backdrop-blur-xl flex flex-col justify-start hover:border-cyan-400/40 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.18)] transition-all duration-300 overflow-hidden cursor-default select-none"
             >
-              {/* 
-                ФОН КАРТОЧКИ: СЕТКА ИЗ ТОЧЕК С 3D-ПЕРСПЕКТИВОЙ К КРАЯМ БЛОКА (ПЕРЕНЕСЕНА ИЗ ADVANTAGES)
-              */}
               <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none -z-10">
-                {/* Перспективный слой точечной матрицы */}
                 <div
                   className="absolute -inset-6 opacity-35 group-hover:opacity-65 transition-opacity duration-500"
                   style={{
@@ -302,57 +184,56 @@ export const TechStack: React.FC = () => {
                   />
                 </div>
 
-                {/* Мягкое космическое внутреннее свечение в углах карточки */}
                 <div className="absolute -top-12 -right-12 w-28 h-28 bg-cyan-500/10 blur-2xl rounded-full group-hover:bg-cyan-400/20 transition-all duration-500" />
                 <div className="absolute -bottom-12 -left-12 w-28 h-28 bg-indigo-500/10 blur-2xl rounded-full group-hover:bg-indigo-400/20 transition-all duration-500" />
               </div>
 
-              {/* 1. БРЕНДОВЫЕ ИКОНКИ С КЛИКАБЕЛЬНЫМИ ССЫЛКАМИ НА ОФИЦИАЛЬНЫЕ САЙТЫ */}
               <div className="flex items-center gap-2 mb-4.5 relative z-10">
-                {card.tools.map((tool, tIdx) => (
-                  <a
-                    key={tIdx}
-                    href={tool.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={tool.title}
-                    className={`w-11 h-11 rounded-[13px] flex items-center justify-center shrink-0 shadow-md transition-all duration-200 cursor-pointer group/tool hover:scale-110 active:scale-95 ${tool.iconBg}`}
-                  >
-                    <TechIconImage
-                      id={tool.id}
-                      alt={tool.name}
-                      fallback={tool.renderFallback}
-                    />
-                    <span className="sr-only">{tool.name}</span>
-                  </a>
-                ))}
+                {card.tools.map((tool, tIdx) => {
+                  const visual = toolVisuals[tool.id] || {
+                    iconBg: 'bg-white/5 border border-white/10',
+                    renderFallback: () => null,
+                  };
+                  return (
+                    <a
+                      key={tIdx}
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={tool.title}
+                      className={`w-11 h-11 rounded-[13px] flex items-center justify-center shrink-0 shadow-md transition-all duration-200 cursor-pointer group/tool hover:scale-110 active:scale-95 ${visual.iconBg}`}
+                    >
+                      <TechIconImage
+                        id={tool.id}
+                        alt={tool.name}
+                        fallback={visual.renderFallback}
+                      />
+                      <span className="sr-only">{tool.name}</span>
+                    </a>
+                  );
+                })}
 
-                {/* Небольшой значок внешней ссылки */}
                 <span className="text-[10px] text-slate-500 font-mono ml-auto opacity-60 group-hover:opacity-100 flex items-center gap-1 transition-opacity">
-                  <span>official</span>
+                  <span>{t.tools.officialLabel}</span>
                   <ExternalLink className="w-2.5 h-2.5" />
                 </span>
               </div>
 
-              {/* 2. НАЗВАНИЕ ТЕХНОЛОГИИ (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
               <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-cyan-200 transition-colors cursor-default select-none pointer-events-none">
                 {card.name}
               </h3>
 
-              {/* 3. ПОДЗАГОЛОВОК (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
               <div className="text-[13px] font-semibold text-slate-200 mt-1 leading-snug cursor-default select-none pointer-events-none">
-                {lang === 'ru' ? card.subtitleRu : card.subtitleEn}
+                {card.subtitle}
               </div>
 
-              {/* 4. ОПИСАНИЕ (КУРСОР НЕ ПЕРЕКЛЮЧАЕТСЯ НА "I") */}
               <p className="text-xs sm:text-[13px] text-slate-400 mt-2.5 leading-relaxed cursor-default select-none pointer-events-none">
-                {lang === 'ru' ? card.descriptionRu : card.descriptionEn}
+                {card.description}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Гарантия прозрачности и передачи проекта / Trust Signature */}
         <div className="mt-10 glass-panel p-5 sm:p-6 rounded-2xl border border-cyan-500/20 bg-cyan-950/20 flex items-center gap-3.5 text-cyan-200 text-sm sm:text-base font-medium cursor-default select-none">
           <CheckCircle className="w-5 h-5 text-cyan-400 shrink-0" />
           <span className="cursor-default select-none">{t.tools.signature}</span>

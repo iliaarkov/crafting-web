@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 
 import { useLanguage } from '../context/LanguageContext';
 import type { ProjectData } from './ProjectModal';
 import { SmartImage } from './SmartImage';
-import { ArrowUpRight, Check, Eye, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Check, Eye } from 'lucide-react';
 
 const ProjectModal = lazy(() => import('./ProjectModal').then((m) => ({ default: m.ProjectModal })));
 
@@ -11,7 +11,7 @@ interface StepState {
 }
 
 export const Projects: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
   const [trackHeight, setTrackHeight] = useState<number>(3000);
 
@@ -20,12 +20,11 @@ export const Projects: React.FC = () => {
   const cardHeightsRef = useRef<number[]>([]);
   const lastWidthRef = useRef<number>(0);
 
-  // Сопоставление с картинками в public/projects/ (поддерживает любые расширения через SmartImage)
   const cleanImageMap: Record<string, string> = {
-    'specialist-portfolio': '/projects/portfolio.webp',
-    'nonprofit-redesign': '/projects/nonprofit.webp',
-    'wine-coop': '/projects/intuitivo.webp',
-    'driving-center': '/projects/driftet.webp',
+    'specialist-portfolio': '/projects/portfolio.jpg',
+    'nonprofit-redesign': '/projects/nonprofit.jpg',
+    'wine-coop': '/projects/wine-coop.jpg',
+    'driving-center': '/projects/driving-center.jpg',
   };
 
   const projects = t.projects.items || [];
@@ -42,7 +41,6 @@ export const Projects: React.FC = () => {
     }
   };
 
-  // Измерение высоты карточек для десктопа
   const measureCardHeights = useCallback((): number[] => {
     if (typeof window === 'undefined' || window.innerWidth < 1024) return [];
     const heights = cardRefs.current.map((el) => {
@@ -55,7 +53,6 @@ export const Projects: React.FC = () => {
     return heights;
   }, []);
 
-  // Расчет целевых положений карточек в стопке на десктопе
   const computeStepStates = useCallback(
     (cardHeights: number[], viewportH: number): StepState[] => {
       if (N === 0) return [];
@@ -94,7 +91,6 @@ export const Projects: React.FC = () => {
     [N]
   );
 
-  // Обновление позиций карточек при скролле на ДЕСКТОПЕ
   const updateDesktopPositions = useCallback(() => {
     if (typeof window === 'undefined' || window.innerWidth < 1024 || !trackRef.current || N === 0) return;
 
@@ -157,8 +153,6 @@ export const Projects: React.FC = () => {
     }
   }, [N, computeStepStates, measureCardHeights]);
 
-  // Слушатель скролла: работает ТОЛЬКО на десктопе!
-  // На мобильных устройствах scroll listener полностью отключён, чтобы исключить зависания и перезагрузки.
   useEffect(() => {
     lastWidthRef.current = window.innerWidth;
 
@@ -236,12 +230,6 @@ export const Projects: React.FC = () => {
         </div>
       </div>
 
-      {/* ================= 1. МОБИЛЬНАЯ ВЕРСИЯ (АППАРАТНЫЙ CSS STICKY БЕЗ JS) ================= */}
-      {/* 
-        На телефонах и планшетах (< 1024px) карточки наслаиваются через 100% нативный CSS position: sticky.
-        Это полностью устраняет зависания, скачки и перезагрузки WebKit/Chrome при обратном скролле,
-        так как браузер рендерит анимацию на GPU в отдельном потоке без выполнения JS.
-      */}
       <div className="block lg:hidden max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
         {projects.map((project, idx) => {
           const projectImg = cleanImageMap[project.id] || project.image;
@@ -257,14 +245,13 @@ export const Projects: React.FC = () => {
               }}
               className="sticky rounded-[24px] bg-[#090d16] border border-white/[0.12] border-t-cyan-400/30 p-5 shadow-[0_-12px_30px_rgba(0,0,0,0.85),0_20px_45px_rgba(0,0,0,0.85)]"
             >
-              {/* Верхняя фолдер-полоска */}
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10 text-xs font-mono">
                 <div className="flex items-center gap-2 truncate pr-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0 shadow-sm shadow-cyan-400/50" />
                   <span className="font-bold text-cyan-300 shrink-0">
                     0{idx + 1} / 0{projects.length}
                   </span>
-                  <span className="text-slate-500">•</span>
+                  <span className="text-slate-400">•</span>
                   <span className="text-slate-200 font-semibold truncate">
                     {project.title}
                   </span>
@@ -274,7 +261,6 @@ export const Projects: React.FC = () => {
                 </span>
               </div>
 
-              {/* Мокап браузера */}
               <div
                 className="group/img relative rounded-2xl overflow-hidden border border-white/10 bg-[#060a12] shadow-xl cursor-pointer mb-5"
                 onClick={() => setSelectedProject(project)}
@@ -285,7 +271,7 @@ export const Projects: React.FC = () => {
                     <span className="w-2 h-2 rounded-full bg-amber-500/80" />
                     <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
                   </div>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <span className="text-[10px] text-slate-400 font-mono">{t.projects.previewLabel}</span>
                 </div>
 
                 <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
@@ -305,7 +291,6 @@ export const Projects: React.FC = () => {
                 </div>
               </div>
 
-              {/* Текст и кнопка */}
               <div>
                 <h3 className="text-lg font-bold text-white mb-2 leading-snug">
                   {project.title}
@@ -316,7 +301,7 @@ export const Projects: React.FC = () => {
 
                 <div className="space-y-1.5 mb-4 bg-white/[0.02] p-3 rounded-xl border border-white/5">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                    {project.whatDoneTitle || (lang === 'ru' ? 'Что сделано:' : 'Key features:')}
+                    {project.whatDoneTitle || t.projects.whatDoneFallback}
                   </div>
                   {project.whatDoneList.slice(0, 3).map((feat, fIdx) => (
                     <div key={fIdx} className="flex items-start gap-2 text-xs text-slate-300">
@@ -339,7 +324,6 @@ export const Projects: React.FC = () => {
         })}
       </div>
 
-      {/* ================= 2. ДЕСКТОПНАЯ ВЕРСИЯ (PINNED DECK ДЛЯ ШИРОКИХ ЭКРАНОВ) ================= */}
       <div
         ref={trackRef}
         className="hidden lg:block relative"
@@ -364,14 +348,13 @@ export const Projects: React.FC = () => {
                   }}
                   className="absolute inset-x-6 pointer-events-auto rounded-[30px] bg-[#090d16] border border-white/[0.12] border-t-cyan-400/30 p-8 shadow-[0_-18px_40px_rgba(0,0,0,0.88),0_25px_50px_rgba(0,0,0,0.85)] will-change-transform [backface-visibility:hidden]"
                 >
-                  {/* Верхний индексный ярлык */}
                   <div className="flex items-center justify-between pb-3 mb-6 border-b border-white/10 text-xs font-mono">
                     <div className="flex items-center gap-2.5 truncate pr-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0 shadow-sm shadow-cyan-400/50" />
                       <span className="font-bold text-cyan-300 shrink-0">
                         0{idx + 1} / 0{projects.length}
                       </span>
-                      <span className="text-slate-500">•</span>
+                      <span className="text-slate-400">•</span>
                       <span className="text-slate-200 font-semibold truncate">
                         {project.title}
                       </span>
@@ -381,7 +364,6 @@ export const Projects: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Контент карточки */}
                   <div className="grid grid-cols-12 gap-8 items-center">
                     <div className="col-span-7">
                       <div
@@ -394,7 +376,7 @@ export const Projects: React.FC = () => {
                             <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                           </div>
-                          <ExternalLink className="w-3 h-3 text-slate-500" />
+                          <span className="text-[10px] text-slate-400 font-mono">{t.projects.previewLabel}</span>
                         </div>
 
                         <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
@@ -430,7 +412,7 @@ export const Projects: React.FC = () => {
 
                         <div className="space-y-2 mb-6 bg-white/[0.02] p-3.5 rounded-xl border border-white/5">
                           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                            {project.whatDoneTitle || (lang === 'ru' ? 'Что сделано:' : 'Key features:')}
+                            {project.whatDoneTitle || t.projects.whatDoneFallback}
                           </div>
                           {project.whatDoneList.slice(0, 3).map((feat, fIdx) => (
                             <div key={fIdx} className="flex items-start gap-2 text-xs text-slate-300">

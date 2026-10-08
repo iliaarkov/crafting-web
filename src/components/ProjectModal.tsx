@@ -24,9 +24,8 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, onDiscuss }) => {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
 
-  // Чистые пути к изображениям в public/projects/
   const cleanImageMap: Record<string, string[]> = {
     'specialist-portfolio': [
       '/projects/portfolio.webp',
@@ -49,49 +48,34 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
       '/projects/nonprofit-mobile.webp',
     ],
     'wine-coop': [
-      '/projects/intuitivo.webp',
-      '/projects/intuitivo-1.webp',
-      '/projects/intuitivo-2.webp',
-      '/projects/intuitivo-3.webp',
-      '/projects/intuitivo-4.webp',
-      '/projects/intuitivo-5.webp',
+      '/projects/wine-coop.webp',
+      '/projects/wine-coop-1.webp',
     ],
     'driving-center': [
-      '/projects/driftet.webp',
-      '/projects/driftet-1.webp',
-      '/projects/driftet-2.webp',
-      '/projects/driftet-3.webp',
-      '/projects/driftet-4.webp',
-      '/projects/driftet-5.webp',
+      '/projects/driving-center.webp',
+      '/projects/driving-center-1.webp',
     ],
   };
 
-  // Список всех изображений для карусели:
-  // Если в проекте явно передан массив без старых путей /src/assets/images/, используем его, иначе cleanImageMap
   const rawImages = project
-    ? (project.images && project.images.length > 0 && !project.images.some(img => img.includes('/src/assets/images/')))
-      ? project.images
-      : cleanImageMap[project.id] || (project.images && project.images.length > 0 ? project.images : [project.image])
+    ? cleanImageMap[project.id] || (project.images && project.images.length > 0 ? project.images : [project.image])
     : [];
 
   const N = rawImages.length;
   const hasMultiple = N > 1;
 
-  // Бесконечный массив слайдов: [last, ...all, first] для плавного цикличного перелистывания
   const slides = hasMultiple ? [rawImages[N - 1], ...rawImages, rawImages[0]] : rawImages;
 
   const [currentIndex, setCurrentIndex] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [timerKey, setTimerKey] = useState(0);
 
-  // Состояние перетаскивания (Instagram-style smooth drag)
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartXRef = useRef<number | null>(null);
   const isPointerDownRef = useRef<boolean>(false);
   const carouselContainerRef = useRef<HTMLDivElement>(null);
 
-  // Сброс индекса при открытии нового проекта
   useEffect(() => {
     if (project) {
       setCurrentIndex(1);
@@ -127,7 +111,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     setTimerKey((k) => k + 1);
   };
 
-  // Закрытие по Escape и стрелки клавиатуры
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -146,7 +129,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     };
   }, [project, onClose, hasMultiple, goToNext, goToPrev]);
 
-  // Автоперелистывание раз в 7 секунд (только если не тянем руками)
   useEffect(() => {
     if (!hasMultiple || !project || isDragging) return;
     const interval = setInterval(() => {
@@ -155,7 +137,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     return () => clearInterval(interval);
   }, [hasMultiple, project, isDragging, timerKey, goToNext]);
 
-  // Бесшовный бесконечный цикл при завершении transition
   const handleTransitionEnd = () => {
     if (!hasMultiple) return;
     if (currentIndex === N + 1) {
@@ -167,13 +148,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     }
   };
 
-  // ================= INSTAGRAM-STYLE SMOOTH POINTER DRAG =================
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!hasMultiple) return;
     isPointerDownRef.current = true;
     dragStartXRef.current = e.clientX;
     setIsDragging(true);
-    setIsTransitioning(false); // Отключаем CSS-анимацию, чтобы слайды следовали за курсором 1:1
+    setIsTransitioning(false);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
@@ -181,8 +161,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     if (!isPointerDownRef.current || dragStartXRef.current === null) return;
     const currentX = e.clientX;
     const diff = currentX - dragStartXRef.current;
-    // Тянем влево (diff < 0) -> лента смещается влево, показывая следующее фото
-    // Тянем вправо (diff > 0) -> лента смещается вправо, показывая предыдущее фото
     setDragOffset(diff);
   };
 
@@ -193,24 +171,18 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
 
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch (err) {
-      // Игнорируем
+    } catch {
+      // ignore
     }
 
     const currentDiff = dragOffset;
-
-    // Включаем плавный transition для доводки слайда
     setIsTransitioning(true);
 
-    // Порог свайпа: 50px
     if (currentDiff < -50) {
-      // Потянули влево -> переход к следующему фото (в ту же сторону!)
       goToNext();
     } else if (currentDiff > 50) {
-      // Потянули вправо -> переход к предыдущему фото (в ту же сторону!)
       goToPrev();
     } else {
-      // Если потянули слабо (< 50px) — пружиним обратно на текущий слайд
       setDragOffset(0);
     }
 
@@ -219,7 +191,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
 
   if (!project) return null;
 
-  // Индекс активной точки (от 0 до N - 1)
   const activeDotIndex = hasMultiple ? (currentIndex - 1 + N) % N : 0;
 
   return (
@@ -231,7 +202,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
         className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto glass-panel rounded-3xl border border-white/15 bg-[#0b0e14]/98 shadow-2xl p-5 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Кнопка закрытия */}
         <button
           onClick={onClose}
           className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white border border-white/10 transition-colors z-20 cursor-pointer"
@@ -240,7 +210,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           <X className="w-5 h-5" />
         </button>
 
-        {/* Заголовок проекта */}
         <div className="mb-6 pr-12">
           <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cyan-950/80 text-cyan-300 border border-cyan-500/30 mb-3">
             {project.tag}
@@ -250,7 +219,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           </h2>
         </div>
 
-        {/* ================= СЛАЙДЕР С ЖИВЫМ ПЕРЕТАСКИВАНИЕМ (INSTAGRAM-STYLE) ================= */}
         <div
           ref={carouselContainerRef}
           className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden mb-6 border border-white/10 bg-slate-950 select-none group touch-pan-y"
@@ -263,7 +231,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
             >
-              {/* ЛЕНТА СЛАЙДОВ С ТОЧНЫМ СЛЕДОВАНИЕМ ЗА КУРСОРОМ */}
               <div
                 className="flex w-full h-full"
                 style={{
@@ -278,7 +245,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
                   <div key={sIdx} className="w-full h-full shrink-0 relative">
                     <SmartImage
                       src={imgSrc}
-                      alt={`${project.title} - фото ${sIdx}`}
+                      alt={`${project.title} - ${t.projects.modalPhotoLabel} ${sIdx}`}
                       className="w-full h-full object-cover pointer-events-none select-none"
                       draggable={false}
                       referrerPolicy="no-referrer"
@@ -287,13 +254,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
                 ))}
               </div>
 
-              {/* Подсказка при наведении на ПК */}
               <div className="absolute top-3 right-3 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-black/60 backdrop-blur-md text-slate-300 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <span>↔</span>
-                <span>{lang === 'ru' ? 'Тяните мышкой для листания' : 'Drag to slide'}</span>
+                <span>{t.projects.modalDragHint}</span>
               </div>
 
-              {/* Точки-индикаторы и прогресс-бар внизу */}
               <div
                 className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10"
                 onClick={(e) => e.stopPropagation()}
@@ -308,7 +273,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
                       className={`relative h-2 rounded-full overflow-hidden transition-all duration-300 cursor-pointer ${
                         isActive ? 'w-8 bg-white/20' : 'w-2 bg-white/30 hover:bg-white/50'
                       }`}
-                      aria-label={`Слайд ${dotIdx + 1}`}
+                      aria-label={`${t.projects.modalSlideLabel} ${dotIdx + 1}`}
                     >
                       {isActive && (
                         <div
@@ -334,14 +299,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           )}
         </div>
 
-        {/* Описание проекта */}
         <div className="space-y-4 text-slate-300 leading-relaxed text-base mb-8">
           <p>{project.description}</p>
           <p>{project.p2}</p>
           {project.p3 && <p className="text-cyan-200/90 font-medium">{project.p3}</p>}
         </div>
 
-        {/* Что реализовано */}
         <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-white/10 mb-8 bg-white/[0.02]">
           <h4 className="text-white font-bold text-base mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400" />
@@ -357,7 +320,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           </div>
         </div>
 
-        {/* Нижние кнопки */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10">
           <button
             onClick={onClose}
@@ -373,7 +335,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
             }}
             className="w-full sm:w-auto px-6 py-2.5 rounded-full text-sm font-semibold text-slate-950 bg-gradient-to-r from-cyan-300 to-sky-400 hover:from-cyan-200 hover:to-sky-300 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>{lang === 'ru' ? 'Обсудить похожий проект' : 'Discuss similar project'}</span>
+            <span>{t.projects.modalDiscuss}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

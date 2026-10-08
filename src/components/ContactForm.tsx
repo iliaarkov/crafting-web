@@ -15,21 +15,20 @@ export const ContactForm: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Автоматический выбор тарифа при клике на карточку в блоке тарифов
   useEffect(() => {
-    const handleSelectPlan = (e: any) => {
+    const handleSelectPlan = (e: CustomEvent<string>) => {
       if (e.detail) {
         setTariff(e.detail);
       }
     };
-    window.addEventListener('select-plan', handleSelectPlan);
-    return () => window.removeEventListener('select-plan', handleSelectPlan);
+    window.addEventListener('select-plan', handleSelectPlan as EventListener);
+    return () => window.removeEventListener('select-plan', handleSelectPlan as EventListener);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !contact.trim()) {
-      setError(lang === 'ru' ? 'Пожалуйста, укажите ваше имя и контакт' : 'Please provide your name and contact');
+      setError(t.contact.form.validationError);
       return;
     }
 
@@ -37,20 +36,18 @@ export const ContactForm: React.FC = () => {
     setError(null);
 
     const tariffLabels: Record<string, string> = {
-      start: lang === 'ru' ? 'Тариф «СТАРТ» (39 000 ₽)' : 'START Plan ($420 / 39,000 ₽)',
-      optimal: lang === 'ru' ? 'Тариф «ОПТИМАЛЬНЫЙ» (69 000 ₽)' : 'OPTIMAL Plan ($740 / 69,000 ₽)',
-      business: lang === 'ru' ? 'Тариф «БИЗНЕС» (99 000 ₽)' : 'BUSINESS Plan ($1,060 / 99,000 ₽)',
-      redesign: lang === 'ru' ? 'Переделка существующего сайта (от 49 000 ₽)' : 'Redesign of Existing Site (from $525)',
-      custom: lang === 'ru' ? 'Индивидуальный проект' : 'Custom Project',
+      start: t.contact.form.tariffs.start,
+      optimal: t.contact.form.tariffs.optimal,
+      business: t.contact.form.tariffs.business,
+      redesign: t.contact.form.tariffs.redesign,
+      custom: t.contact.form.tariffs.custom,
     };
 
-    const friendlyTariff = tariffLabels[tariff] || tariff || (lang === 'ru' ? 'Индивидуальный расчет' : 'Custom Estimate');
-
-    // Принимаем любой формат ссылки (iliaarkov.com, www.site.ru, https://...)
+    const friendlyTariff = tariffLabels[tariff] || tariff || t.contact.form.tariffs.defaultEstimate;
     const normalizedUrl = projectUrl.trim();
 
     try {
-      const response = await fetch('/api/lead', {
+      await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -63,22 +60,12 @@ export const ContactForm: React.FC = () => {
         }),
       });
 
-      if (response.ok) {
-        setSubmitted(true);
-        setName('');
-        setContact('');
-        setProjectUrl('');
-        setMessage('');
-      } else {
-        // Если API на статическом хостинге недоступен, подтверждаем заявку клиенту
-        setSubmitted(true);
-        setName('');
-        setContact('');
-        setProjectUrl('');
-        setMessage('');
-      }
+      setSubmitted(true);
+      setName('');
+      setContact('');
+      setProjectUrl('');
+      setMessage('');
     } catch {
-      // Резервный успешный отклик
       setSubmitted(true);
       setName('');
       setContact('');
@@ -182,19 +169,19 @@ export const ContactForm: React.FC = () => {
                 >
                   <option value="">{t.contact.form.tariffPlaceholder}</option>
                   <option value="start">
-                    {lang === 'ru' ? 'Тариф «СТАРТ» (39 000 ₽)' : 'START Plan ($420 / 39,000 ₽)'}
+                    {t.contact.form.tariffs.start}
                   </option>
                   <option value="optimal">
-                    {lang === 'ru' ? 'Тариф «ОПТИМАЛЬНЫЙ» (69 000 ₽)' : 'OPTIMAL Plan ($740 / 69,000 ₽)'}
+                    {t.contact.form.tariffs.optimal}
                   </option>
                   <option value="business">
-                    {lang === 'ru' ? 'Тариф «БИЗНЕС» (99 000 ₽)' : 'BUSINESS Plan ($1,060 / 99,000 ₽)'}
+                    {t.contact.form.tariffs.business}
                   </option>
                   <option value="redesign">
-                    {lang === 'ru' ? 'Переделка существующего сайта (от 49 000 ₽)' : 'Redesign of Existing Site (from $525)'}
+                    {t.contact.form.tariffs.redesign}
                   </option>
                   <option value="custom">
-                    {lang === 'ru' ? 'Другая задача / индивидуальный проект' : 'Custom task / individual inquiry'}
+                    {t.contact.form.tariffs.custom}
                   </option>
                 </select>
               </div>

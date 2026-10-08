@@ -15,6 +15,8 @@ export const About: React.FC = () => {
 
   const [deltaX, setDeltaX] = useState(0);
   const [panDistance, setPanDistance] = useState(380);
+
+  // 1. Определение типа экрана (ПК / мобильный)
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -24,7 +26,8 @@ export const About: React.FC = () => {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-	useEffect(() => {
+  // 2. Расчет горизонтального центра (строго ПОД заголовком, deltaY = 0)
+  useEffect(() => {
     if (!isDesktop) return;
 
     const measureLayout = () => {
@@ -32,10 +35,12 @@ export const About: React.FC = () => {
       const frameRect = frameRef.current.getBoundingClientRect();
       const slotRect = profileSlotRef.current.getBoundingClientRect();
 
+      // Горизонтальный центр экрана относительно якорного слота
       const frameCenterX = frameRect.width / 2;
       const slotCenterX = slotRect.left - frameRect.left + slotRect.width / 2;
       setDeltaX(frameCenterX - slotCenterX);
 
+      // Расчет высоты сдвига для появления нижних карточек
       const calculatedPan = Math.max(320, Math.min(460, slotRect.height + 24));
       setPanDistance(calculatedPan);
     };
@@ -49,6 +54,7 @@ export const About: React.FC = () => {
     };
   }, [isDesktop]);
 
+  // 3. Слушатель скролла для десктопа
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -86,6 +92,8 @@ export const About: React.FC = () => {
   const scrollDownToRow2 = Math.min(1, Math.max(0, (progress - 0.58) / 0.38));
   const currentStagePanY = scrollDownToRow2 * panDistance;
   const row2Enter = Math.min(1, Math.max(0, (progress - 0.64) / 0.30));
+
+  // Динамические параметры карты профиля
   const currentDeltaX = deltaX * (1 - flyToSlot);
   const currentScale = 0.9 + 0.14 * summonEnter - 0.04 * flyToSlot;
   const currentRotateY = 16 * (1 - summonEnter);
@@ -98,12 +106,13 @@ export const About: React.FC = () => {
       ref={containerRef}
       className={isDesktop ? 'relative min-h-[260vh]' : 'py-16 sm:py-24 relative overflow-hidden'}
     >
-      {/* ДЕСКТОП: Липкий экран с единой связной структурой */}
+      {/* ДЕСКТОП: Липкий экран с плавной анимацией */}
       {isDesktop ? (
         <div
           ref={frameRef}
           className="sticky top-0 h-screen w-full flex flex-col justify-start pt-24 pb-8 overflow-hidden"
         >
+          {/* Контейнер контента, плавно сдвигающийся вверх */}
           <div
             ref={contentWrapperRef}
             className="w-full max-w-6xl mx-auto px-4 sm:px-6"
@@ -112,6 +121,7 @@ export const About: React.FC = () => {
               willChange: 'transform',
             }}
           >
+            {/* Заголовок секции: строго вверху */}
             <div className="max-w-3xl mb-8">
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -124,7 +134,9 @@ export const About: React.FC = () => {
 
             {/* СТРОКА 1: Профиль (слева) + Описание (справа) */}
             <div className="grid grid-cols-12 gap-8 mb-8 items-stretch relative">
+              {/* Якорный слот левой колонки */}
               <div ref={profileSlotRef} className="col-span-4 relative min-h-[400px]">
+                {/* Карточка профиля */}
                 <div
                   className={`glass-panel p-6 rounded-3xl border flex flex-col justify-between items-center text-center relative overflow-hidden group transition-shadow duration-300 ${
                     isCentered
@@ -140,6 +152,7 @@ export const About: React.FC = () => {
                     backfaceVisibility: 'hidden',
                   }}
                 >
+                  {/* Неоновый ореол */}
                   <div
                     className={`absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none -z-10 transition-opacity duration-500 ${
                       isCentered
@@ -148,6 +161,7 @@ export const About: React.FC = () => {
                     }`}
                   />
 
+                  {/* Бейдж при появлении */}
                   {isCentered && (
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 whitespace-nowrap animate-bounce">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 shadow-lg shadow-cyan-500/40">
@@ -211,7 +225,7 @@ export const About: React.FC = () => {
                 </div>
               </div>
 
-              {/* Правая колонка: Описание и что могу разместить */}
+              {/* Правая колонка: Описание и состав услуг */}
               <div
                 className="col-span-8 flex flex-col gap-5"
                 style={{
@@ -251,7 +265,7 @@ export const About: React.FC = () => {
               </div>
             </div>
 
-            {/* СТРОКА 2: КОМУ ПОДХОДИТ И НЕ ПОДХОДИТ */}
+            {/* СТРОКА 2: Кому подходит / не подходит (поднимается на место первой строки) */}
             <div
               style={{
                 opacity: row2Enter,

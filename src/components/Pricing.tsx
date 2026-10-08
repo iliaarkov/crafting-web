@@ -5,7 +5,7 @@ import { Check, Sparkles, ArrowRight, RefreshCw, PlusCircle } from 'lucide-react
 export const Pricing: React.FC = () => {
   const { t } = useLanguage();
 
-  const handleSelectPlan = (planName: string) => {
+  const handleSelectPlan = (planId: string) => {
     const contactElem = document.querySelector('#contact');
     if (contactElem) {
       const offsetTop = contactElem.getBoundingClientRect().top + window.scrollY - 80;
@@ -16,7 +16,7 @@ export const Pricing: React.FC = () => {
 
       const selectElem = document.querySelector<HTMLSelectElement>('#tariff-select');
       if (selectElem) {
-        selectElem.value = planName;
+        selectElem.value = planId;
         selectElem.dispatchEvent(new Event('change', { bubbles: true }));
       }
     }
@@ -24,7 +24,6 @@ export const Pricing: React.FC = () => {
 
   return (
     <section id="pricing" className="py-20 lg:py-32 relative overflow-hidden">
-      {/* Мягкий рассеянный фоновый свет как на референсе */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-cyan-600/15 via-blue-600/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -44,7 +43,6 @@ export const Pricing: React.FC = () => {
           </p>
         </div>
 
-        {/* 3 карточки тарифов (Старт, Оптимальный, Бизнес) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch mb-20">
           {t.pricing.plans.map((plan) => {
             const isOptimal = plan.popular;
@@ -123,7 +121,7 @@ export const Pricing: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => handleSelectPlan(`${plan.name} (${plan.currentPrice})`)}
+                  onClick={() => handleSelectPlan(plan.id)}
                   className={`w-full py-3.5 px-6 rounded-full font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
                     isOptimal
                       ? 'bg-white text-slate-950 hover:bg-slate-100 shadow-xl shadow-cyan-500/20 font-bold'
@@ -138,7 +136,6 @@ export const Pricing: React.FC = () => {
           })}
         </div>
 
-        {/* Дополнительная услуга: Переделка сайта */}
         <div className="glass-panel rounded-3xl p-7 sm:p-10 border border-white/10 mb-14 bg-gradient-to-r from-[#0d141e]/70 via-[#0a0f17]/70 to-[#0d141e]/70">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8">
@@ -176,7 +173,7 @@ export const Pricing: React.FC = () => {
                 {t.pricing.extraService.priceNote}
               </p>
               <button
-                onClick={() => handleSelectPlan('Переделка существующего сайта')}
+                onClick={() => handleSelectPlan('redesign')}
                 className="w-full sm:w-auto px-6 py-3 rounded-full text-sm font-semibold text-slate-950 bg-gradient-to-r from-cyan-300 to-sky-400 hover:from-cyan-200 hover:to-sky-300 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
               >
                 {t.pricing.extraService.btnText}
@@ -185,7 +182,6 @@ export const Pricing: React.FC = () => {
           </div>
         </div>
 
-        {/* Дополнительные возможности */}
         <div className="pt-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
@@ -218,3 +214,5 @@ export const Pricing: React.FC = () => {
     </section>
   );
 };
+
+export default Pricing;

@@ -3,19 +3,17 @@ import { useLanguage } from '../context/LanguageContext';
 import { Rocket, Compass } from 'lucide-react';
 
 export const Process: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const pinRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Состояние пути SVG и длины линии
   const [svgPath, setSvgPath] = useState<string>('');
   const [totalLength, setTotalLength] = useState<number>(0);
   const [snakeProgress, setSnakeProgress] = useState<number>(0);
   const [tipCoord, setTipCoord] = useState<{ x: number; y: number } | null>(null);
 
-  // Массив активных шагов (true когда скролл достиг шага)
   const [activeSteps, setActiveSteps] = useState<boolean[]>([
     false,
     false,
@@ -28,7 +26,6 @@ export const Process: React.FC = () => {
 
   const steps = t.process.steps || [];
 
-  // Пересчет координат точек и построение плавной кривой маршрута
   const updateRouteGeometry = () => {
     if (!containerRef.current) return;
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -47,17 +44,14 @@ export const Process: React.FC = () => {
 
     if (points.length < 2) return;
 
-    // Начало линии: вертикально чуть выше первой точки
     let d = `M ${points[0].x} ${Math.max(0, points[0].y - 40)}`;
     d += ` L ${points[0].x} ${points[0].y}`;
 
-    // Соединяем точки красивыми кубическими кривыми Безье
     for (let i = 0; i < points.length - 1; i++) {
       const p1 = points[i];
       const p2 = points[i + 1];
       const deltaY = p2.y - p1.y;
 
-      // Контрольные точки для плавного S-образного изгиба строго между маркерами
       const cp1x = p1.x;
       const cp1y = p1.y + deltaY * 0.55;
       const cp2x = p2.x;
@@ -69,19 +63,16 @@ export const Process: React.FC = () => {
     setSvgPath(d);
   };
 
-  // Измерение длины SVG пути после обновления атрибута `d`
   useEffect(() => {
     if (pathRef.current && svgPath) {
       try {
         const len = pathRef.current.getTotalLength();
         setTotalLength(len);
-      } catch (e) {
-        // Игнорируем кратковременную ошибку измерения при ререндере
+      } catch {
       }
     }
   }, [svgPath]);
 
-  // Слушатель скролла и обновление заполнения линии
   useEffect(() => {
     let animId: number;
 
@@ -89,10 +80,8 @@ export const Process: React.FC = () => {
       if (!containerRef.current) return;
 
       const viewportH = window.innerHeight;
-      // Линия триггера активности: 74% от верха экрана (чтобы сверху было много места для чтения)
       const triggerY = viewportH * 0.74;
 
-      // Проверяем статус каждого шага относительно triggerY
       const newActive = pinRefs.current.map((el) => {
         if (!el) return false;
         const rect = el.getBoundingClientRect();
@@ -101,7 +90,6 @@ export const Process: React.FC = () => {
 
       setActiveSteps(newActive);
 
-      // Рассчитываем прогресс линии (от первой точки до последней)
       const firstPin = pinRefs.current[0];
       const lastPin = pinRefs.current[pinRefs.current.length - 1];
 
@@ -118,7 +106,6 @@ export const Process: React.FC = () => {
           const clamped = Math.max(0, Math.min(1, rawProgress));
           setSnakeProgress(clamped);
 
-          // Координата кончика светящейся линии
           if (pathRef.current && totalLength > 0) {
             try {
               const currentLen = totalLength * clamped;
@@ -128,7 +115,7 @@ export const Process: React.FC = () => {
               } else {
                 setTipCoord(null);
               }
-            } catch (err) {
+            } catch {
               setTipCoord(null);
             }
           }
@@ -162,40 +149,32 @@ export const Process: React.FC = () => {
 
   return (
     <section id="process" className="py-24 lg:py-32 relative overflow-hidden select-none">
-      {/* Мягкие фоновые свечения внутри секции с overflow-hidden */}
       <div className="absolute top-1/4 left-1/4 w-[450px] h-[320px] bg-cyan-500/5 blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[320px] bg-emerald-500/5 blur-[140px] rounded-full pointer-events-none -z-10" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        {/* Заголовок секции */}
         <div className="max-w-3xl mb-16 sm:mb-24">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-3 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/20 backdrop-blur-md">
             <Compass className="w-3.5 h-3.5" />
-            <span>{lang === 'ru' ? 'Маршрут от и до' : 'Project Roadmap'}</span>
+            <span>{t.process.badge}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
             {t.process.title}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            {lang === 'ru'
-              ? 'Каждый этап прозрачен: от первого сообщения до передачи доступов и запуска сайта.'
-              : 'Clear milestones from the very first greeting to custom domain launch and keys handoff.'}
+            {t.process.intro}
           </p>
         </div>
 
-        {/* ================= КОНТЕЙНЕР МАРШРУТА ================= */}
         <div ref={containerRef} className="relative w-full">
-          {/* SVG ЛИНИЯ НАВИГАТОРА */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
             <defs>
-              {/* Градиент светящейся линии */}
               <linearGradient id="routeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#22d3ee" />
                 <stop offset="65%" stopColor="#38bdf8" />
                 <stop offset="100%" stopColor="#34d399" />
               </linearGradient>
 
-              {/* Мягкий фильтр неонового свечения */}
               <filter id="glowFilter" x="-30%" y="-30%" width="160%" height="160%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
@@ -205,7 +184,6 @@ export const Process: React.FC = () => {
               </filter>
             </defs>
 
-            {/* 1. Фоновая неактивная пунктирная линия маршрута */}
             {svgPath && (
               <path
                 d={svgPath}
@@ -216,7 +194,6 @@ export const Process: React.FC = () => {
               />
             )}
 
-            {/* 2. СПЛОШНАЯ светящаяся линия, последовательно заполняющаяся при скролле */}
             {svgPath && totalLength > 0 && (
               <path
                 ref={pathRef}
@@ -232,7 +209,6 @@ export const Process: React.FC = () => {
               />
             )}
 
-            {/* 3. Светящаяся искра на кончике заполняющейся линии */}
             {tipCoord && snakeProgress > 0.01 && (
               <g transform={`translate(${tipCoord.x}, ${tipCoord.y})`}>
                 <circle r="6" fill="#ffffff" filter="url(#glowFilter)" />
@@ -241,33 +217,18 @@ export const Process: React.FC = () => {
             )}
           </svg>
 
-          {/* 
-            СПИСОК ШАГОВ С АРХИТЕКТУРОЙ ИСКЛЮЧЕНИЯ ПЕРЕСЕЧЕНИЙ:
-            На десктопе: 
-              - Шаги 01, 03, 05: текст СЛЕВА от маркера (text-right), маркер в центре.
-              - Шаги 02, 04, 06: маркер в центре, текст СПРАВА от маркера (text-left).
-              - Шаг 07: маркер строго по центру, текст центрирован.
-            Линия идёт строго по центральному коридору между маркерами и НИКОГДА не задевает текст!
-            
-            На смартфонах (< 768px):
-              - Все маркеры выстроены по левому краю (x = 24px).
-              - Весь текст расположен строго справа с отступом pl-14.
-              Линия проходит только по маркерам слева и НИКОГДА не касается текста!
-          */}
           <div className="space-y-16 sm:space-y-24 lg:space-y-28 relative z-10">
             {steps.map((step, idx) => {
               const isActive = activeSteps[idx];
-              const isFinish = idx === 6; // Шаг 07: Запуск
-              const isLeftOnDesktop = idx % 2 === 0 && !isFinish; // 01, 03, 05
+              const isFinish = idx === 6;
+              const isLeftOnDesktop = idx % 2 === 0 && !isFinish;
 
-              // ФИНИШНЫЙ ШАГ 07 (ЦЕНТРИРОВАН)
               if (isFinish) {
                 return (
                   <div
                     key={idx}
                     className="w-full flex flex-col items-center text-center pt-4"
                   >
-                    {/* МАРКЕР ФИНИША */}
                     <div
                       ref={(el) => {
                         pinRefs.current[idx] = el;
@@ -285,16 +246,14 @@ export const Process: React.FC = () => {
                       />
                     </div>
 
-                    {/* СТРОГО ОТДЕЛЬНАЯ СТРОКА: ЭТАП 07 */}
                     <div
                       className={`text-xs font-mono font-bold uppercase tracking-wider mb-1.5 transition-colors duration-300 ${
                         isActive ? 'text-emerald-400' : 'text-slate-600'
                       }`}
                     >
-                      {lang === 'ru' ? 'Этап 07' : 'Stage 07'}
+                      {`${t.process.stagePrefix} ${step.number}`}
                     </div>
 
-                    {/* ЗАГОЛОВОК: ЗАПУСК */}
                     <h3
                       className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight transition-colors duration-300 ${
                         isActive
@@ -305,7 +264,6 @@ export const Process: React.FC = () => {
                       {step.title}
                     </h3>
 
-                    {/* ОПИСАНИЕ ЭТАПА */}
                     <p
                       className={`text-sm sm:text-base leading-relaxed mt-2.5 max-w-lg mx-auto transition-colors duration-300 ${
                         isActive ? 'text-slate-200 font-medium' : 'text-slate-600'
@@ -314,7 +272,6 @@ export const Process: React.FC = () => {
                       {step.description}
                     </p>
 
-                    {/* КРАСИВАЯ ЭЛЕГАНТНАЯ ПЛАШКА ФИНИША */}
                     <div
                       className={`mt-4.5 inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
                         isActive
@@ -324,23 +281,19 @@ export const Process: React.FC = () => {
                     >
                       <Rocket className="w-3.5 h-3.5 text-emerald-400" />
                       <span className="text-xs font-semibold">
-                        {lang === 'ru' ? 'Финиш • Сайт в сети и готов к работе!' : 'Finish • Site is live and operational!'}
+                        {t.process.finishBadge}
                       </span>
                     </div>
                   </div>
                 );
               }
 
-              // ШАГИ 01 - 06:
               return (
                 <div key={idx} className="w-full relative">
-                  {/* МОБИЛЬНЫЙ ВИД (< 768px): Маркер слева, текст справа */}
                   <div className="flex md:hidden items-start gap-4">
-                    {/* Маркер на мобильном */}
                     <div
                       ref={(el) => {
-                        // На мобилках привязываем реф
-                        if (window.innerWidth < 768) {
+                        if (typeof window !== 'undefined' && window.innerWidth < 768) {
                           pinRefs.current[idx] = el;
                         }
                       }}
@@ -353,14 +306,13 @@ export const Process: React.FC = () => {
                       {step.number}
                     </div>
 
-                    {/* Текст на мобильном */}
                     <div className="flex-1 min-w-0">
                       <div
                         className={`text-xs font-mono font-bold uppercase tracking-wider mb-1 transition-colors duration-300 ${
                           isActive ? 'text-cyan-400' : 'text-slate-600'
                         }`}
                       >
-                        {lang === 'ru' ? `Этап ${step.number}` : `Stage ${step.number}`}
+                        {`${t.process.stagePrefix} ${step.number}`}
                       </div>
                       <h3
                         className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
@@ -379,9 +331,7 @@ export const Process: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ДЕСКТОПНЫЙ ВИД (>= 768px): 2-колоночный коридор */}
                   <div className="hidden md:grid md:grid-cols-2 md:gap-12 items-center">
-                    {/* ЛЕВАЯ КОЛОНКА */}
                     <div
                       className={`flex items-center justify-end ${
                         isLeftOnDesktop ? 'text-right' : 'opacity-0 pointer-events-none'
@@ -394,7 +344,7 @@ export const Process: React.FC = () => {
                               isActive ? 'text-cyan-400' : 'text-slate-600'
                             }`}
                           >
-                            {lang === 'ru' ? `Этап ${step.number}` : `Stage ${step.number}`}
+                            {`${t.process.stagePrefix} ${step.number}`}
                           </div>
                           <h3
                             className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${
@@ -413,11 +363,10 @@ export const Process: React.FC = () => {
                         </div>
                       )}
 
-                      {/* МАРКЕР ШАГА СЛЕВА (В центре) */}
                       {isLeftOnDesktop && (
                         <div
                           ref={(el) => {
-                            if (window.innerWidth >= 768) {
+                            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                               pinRefs.current[idx] = el;
                             }
                           }}
@@ -432,17 +381,15 @@ export const Process: React.FC = () => {
                       )}
                     </div>
 
-                    {/* ПРАВАЯ КОЛОНКА */}
                     <div
                       className={`flex items-center justify-start ${
                         !isLeftOnDesktop ? 'text-left' : 'opacity-0 pointer-events-none'
                       }`}
                     >
-                      {/* МАРКЕР ШАГА СПРАВА (В центре) */}
                       {!isLeftOnDesktop && (
                         <div
                           ref={(el) => {
-                            if (window.innerWidth >= 768) {
+                            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                               pinRefs.current[idx] = el;
                             }
                           }}
@@ -463,7 +410,7 @@ export const Process: React.FC = () => {
                               isActive ? 'text-cyan-400' : 'text-slate-600'
                             }`}
                           >
-                            {lang === 'ru' ? `Этап ${step.number}` : `Stage ${step.number}`}
+                            {`${t.process.stagePrefix} ${step.number}`}
                           </div>
                           <h3
                             className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${
