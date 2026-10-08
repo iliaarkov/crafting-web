@@ -15,8 +15,6 @@ export const About: React.FC = () => {
 
   const [deltaX, setDeltaX] = useState(0);
   const [panDistance, setPanDistance] = useState(380);
-
-  // 1. Определение типа экрана (ПК / мобильный)
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -26,8 +24,7 @@ export const About: React.FC = () => {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // 2. Расчет горизонтального центра (строго ПОД заголовком, deltaY = 0)
-  useEffect(() => {
+	useEffect(() => {
     if (!isDesktop) return;
 
     const measureLayout = () => {
@@ -35,12 +32,10 @@ export const About: React.FC = () => {
       const frameRect = frameRef.current.getBoundingClientRect();
       const slotRect = profileSlotRef.current.getBoundingClientRect();
 
-      // Горизонтальный центр экрана относительно якорного слота
       const frameCenterX = frameRect.width / 2;
       const slotCenterX = slotRect.left - frameRect.left + slotRect.width / 2;
       setDeltaX(frameCenterX - slotCenterX);
 
-      // Расчет высоты сдвига для появления нижних карточек
       const calculatedPan = Math.max(320, Math.min(460, slotRect.height + 24));
       setPanDistance(calculatedPan);
     };
@@ -54,7 +49,6 @@ export const About: React.FC = () => {
     };
   }, [isDesktop]);
 
-  // 3. Слушатель скролла
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -85,27 +79,13 @@ export const About: React.FC = () => {
     };
   }, [isDesktop]);
 
-  // ================= ФАЗЫ АНИМАЦИИ ДЛЯ ПК (min-h-[260vh] - БЕЗ ХОЛОСТОГО СКРОЛЛА В КОНЦЕ) ================= //
-  // Фаза 1: Призыв легендарной карты по центру ПОД заголовком (0.02 -> 0.16)
+  // ================= ФАЗЫ АНИМАЦИИ ДЛЯ ПК ================= //
   const summonEnter = Math.min(1, Math.max(0, (progress - 0.02) / 0.14));
-
-  // Фаза 2: Смещение на свое место влево (0.16 -> 0.32)
   const flyToSlot = Math.min(1, Math.max(0, (progress - 0.16) / 0.16));
-
-  // Фаза 3: Влет правого блока "Меня зовут Илья..." (0.22 -> 0.36)
   const descEnter = Math.min(1, Math.max(0, (progress - 0.22) / 0.14));
-
-  // Фаза 4: Комфортная задержка для чтения первой части (0.36 -> 0.58)
-
-  // Фаза 5: Плавный скролл страницы вверх, чтобы нижние блоки поднялись строго под верхними (0.58 -> 0.96)
-  // Анимация завершается прямо к концу секции (0.96) — НИКАКОЙ ЗАДЕРЖКИ В КОНЦЕ!
   const scrollDownToRow2 = Math.min(1, Math.max(0, (progress - 0.58) / 0.38));
   const currentStagePanY = scrollDownToRow2 * panDistance;
-
-  // Фаза 6: Появление нижних блоков "Кому подходит / не подходит" (0.64 -> 0.94)
   const row2Enter = Math.min(1, Math.max(0, (progress - 0.64) / 0.30));
-
-  // Динамические параметры карты профиля
   const currentDeltaX = deltaX * (1 - flyToSlot);
   const currentScale = 0.9 + 0.14 * summonEnter - 0.04 * flyToSlot;
   const currentRotateY = 16 * (1 - summonEnter);
@@ -124,7 +104,6 @@ export const About: React.FC = () => {
           ref={frameRef}
           className="sticky top-0 h-screen w-full flex flex-col justify-start pt-24 pb-8 overflow-hidden"
         >
-          {/* Единый контейнер всего контента блока "Обо мне", который плавно скроллится вверх */}
           <div
             ref={contentWrapperRef}
             className="w-full max-w-6xl mx-auto px-4 sm:px-6"
@@ -133,7 +112,6 @@ export const About: React.FC = () => {
               willChange: 'transform',
             }}
           >
-            {/* Заголовок секции: ВСЕГДА ВВЕРХУ, карта профиля появляется строго под ним */}
             <div className="max-w-3xl mb-8">
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -146,9 +124,7 @@ export const About: React.FC = () => {
 
             {/* СТРОКА 1: Профиль (слева) + Описание (справа) */}
             <div className="grid grid-cols-12 gap-8 mb-8 items-stretch relative">
-              {/* Якорный слот левой колонки */}
               <div ref={profileSlotRef} className="col-span-4 relative min-h-[400px]">
-                {/* Легендарная карточка профиля */}
                 <div
                   className={`glass-panel p-6 rounded-3xl border flex flex-col justify-between items-center text-center relative overflow-hidden group transition-shadow duration-300 ${
                     isCentered
@@ -157,7 +133,6 @@ export const About: React.FC = () => {
                   }`}
                   style={{
                     opacity: cardOpacity,
-                    // По оси Y смещение 0: карта ровно в своем ряду строго под заголовком!
                     transform: `perspective(1000px) translate3d(${currentDeltaX}px, 0, 0) scale(${currentScale}) rotateY(${currentRotateY}deg)`,
                     transformOrigin: 'center center',
                     pointerEvents: cardOpacity > 0.5 ? 'auto' : 'none',
@@ -165,7 +140,6 @@ export const About: React.FC = () => {
                     backfaceVisibility: 'hidden',
                   }}
                 >
-                  {/* Неоновый ореол при вызове */}
                   <div
                     className={`absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none -z-10 transition-opacity duration-500 ${
                       isCentered
@@ -174,7 +148,6 @@ export const About: React.FC = () => {
                     }`}
                   />
 
-                  {/* Легендарный бейдж */}
                   {isCentered && (
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 whitespace-nowrap animate-bounce">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 shadow-lg shadow-cyan-500/40">
@@ -187,12 +160,19 @@ export const About: React.FC = () => {
                   <div className="w-full flex flex-col items-center mt-2">
                     <div className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border-2 border-cyan-400/30 shadow-2xl shadow-cyan-950/50 mb-4 bg-[#090d14] group-hover:border-cyan-400/60 transition-colors">
                       {!imgError ? (
-                        <img
-                          src="/images/ilya.jpg"
-                          alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
-                          onError={() => setImgError(true)}
-                          className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
-                        />
+                        <picture>
+                          <source srcSet="/images/ilya.webp" type="image/webp" />
+                          <img
+                            src="/images/ilya.jpg"
+                            alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
+                            onError={() => setImgError(true)}
+                            width={176}
+                            height={176}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                          />
+                        </picture>
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/80 via-[#0a0f18] to-slate-900 text-cyan-300 p-4">
                           <UserCheck className="w-14 h-14 text-cyan-400/80 mb-2" />
@@ -271,7 +251,7 @@ export const About: React.FC = () => {
               </div>
             </div>
 
-            {/* СТРОКА 2: КОМУ ПОДХОДИТ И НЕ ПОДХОДИТ (РАСПОЛОЖЕНЫ СТРОГО ПОД ВЕРХНИМИ БЛОКАМИ) */}
+            {/* СТРОКА 2: КОМУ ПОДХОДИТ И НЕ ПОДХОДИТ */}
             <div
               style={{
                 opacity: row2Enter,
@@ -340,12 +320,19 @@ export const About: React.FC = () => {
             <div className="w-full flex flex-col items-center">
               <div className="relative w-40 h-40 rounded-2xl overflow-hidden border-2 border-cyan-400/40 shadow-2xl shadow-cyan-950/60 mb-4 bg-[#090d14]">
                 {!imgError ? (
-                  <img
-                    src="/images/ilya.jpg"
-                    alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
-                    onError={() => setImgError(true)}
-                    className="w-full h-full object-cover object-top"
-                  />
+                  <picture>
+                    <source srcSet="/images/ilya.webp" type="image/webp" />
+                    <img
+                      src="/images/ilya.jpg"
+                      alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
+                      onError={() => setImgError(true)}
+                      width={160}
+                      height={160}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </picture>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/80 via-[#0a0f18] to-slate-900 text-cyan-300 p-4">
                     <UserCheck className="w-14 h-14 text-cyan-400/80 mb-2" />
