@@ -188,7 +188,6 @@ export interface Translations {
     email: string;
     privacy: string;
     copyright: string;
-    cmsButton: string;
   };
   privacyModal: {
     title: string;
@@ -197,26 +196,13 @@ export interface Translations {
     p2: string;
     p3: string;
     p4: string;
-  };
-  cms: {
-    title: string;
-    leadsCount: string;
-    noLeads: string;
-    status: {
-      new: string;
-      in_progress: string;
-      completed: string;
-      archived: string;
-    };
-    telegramSettingsTitle: string;
-    telegramTokenLabel: string;
-    telegramChatIdLabel: string;
-    saveSettings: string;
-    savedToast: string;
-    testSend: string;
-    exportCsv: string;
-    clearLeads: string;
-    close: string;
+    p5: string;
+    p6: string;
+    p7: string;
+    p8: string;
+    p9: string;
+    p10: string;
+
   };
 }
 
