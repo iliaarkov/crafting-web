@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { PrivacyModal } from './PrivacyModal';
 import { Send, Mail, Shield, ArrowUp } from 'lucide-react';
+
+const PrivacyModal = lazy(() => import('./PrivacyModal').then((m) => ({ default: m.PrivacyModal })));
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -15,6 +16,7 @@ export const Footer: React.FC = () => {
     <footer className="py-14 lg:py-20 border-t border-white/10 relative bg-[#040609]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-12">
+          {/* Brand info */}
           <div className="max-w-md">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-cyan-400" />
@@ -27,6 +29,7 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
+          {/* Social and Action Links */}
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-slate-300">
             <a
               href="https://t.me/iliaarkovdotcom"
@@ -54,16 +57,19 @@ export const Footer: React.FC = () => {
               <span>{t.footer.privacy}</span>
             </button>
 
+            {/* Back to top button */}
             <button
               onClick={scrollToTop}
               className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
               title="Scroll to top"
+              aria-label="Scroll to top"
             >
               <ArrowUp className="w-4 h-4" />
             </button>
           </div>
         </div>
 
+        {/* Bottom bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>{t.footer.copyright}</div>
           <div className="text-slate-600">
@@ -72,7 +78,11 @@ export const Footer: React.FC = () => {
         </div>
       </div>
 
-      <PrivacyModal isOpen={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+      {privacyOpen && (
+        <Suspense fallback={null}>
+          <PrivacyModal isOpen={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+        </Suspense>
+      )}
     </footer>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+const EXTENSIONS = ['.webp', '.jpg', '.jpeg', '.png'];
 
 export interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
@@ -11,6 +11,8 @@ export const SmartImage: React.FC<SmartImageProps> = ({
   src,
   onError,
   fallbackExts = EXTENSIONS,
+  loading = 'lazy',
+  decoding = 'async',
   ...props
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(src);

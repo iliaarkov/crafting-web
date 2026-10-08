@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { ProjectModal, type ProjectData } from './ProjectModal';
+import type { ProjectData } from './ProjectModal';
 import { SmartImage } from './SmartImage';
 import { ArrowUpRight, Check, Eye, ExternalLink } from 'lucide-react';
+
+const ProjectModal = lazy(() => import('./ProjectModal').then((m) => ({ default: m.ProjectModal })));
 
 interface StepState {
   cardTops: number[];
@@ -40,7 +42,7 @@ export const Projects: React.FC = () => {
     }
   };
 
-  // Измерение высоты карточек только для десктопа
+  // Измерение высоты карточек для десктопа
   const measureCardHeights = useCallback((): number[] => {
     if (typeof window === 'undefined' || window.innerWidth < 1024) return [];
     const heights = cardRefs.current.map((el) => {
@@ -92,7 +94,7 @@ export const Projects: React.FC = () => {
     [N]
   );
 
-  // Обновление позиций карточек при скролле ТОЛЬКО НА ДЕСКТОПЕ
+  // Обновление позиций карточек при скролле на ДЕСКТОПЕ
   const updateDesktopPositions = useCallback(() => {
     if (typeof window === 'undefined' || window.innerWidth < 1024 || !trackRef.current || N === 0) return;
 
@@ -155,7 +157,8 @@ export const Projects: React.FC = () => {
     }
   }, [N, computeStepStates, measureCardHeights]);
 
-  // Слушатель скролла: работает ИСКЛЮЧИТЕЛЬНО на экранах от 1024px
+  // Слушатель скролла: работает ТОЛЬКО на десктопе!
+  // На мобильных устройствах scroll listener полностью отключён, чтобы исключить зависания и перезагрузки.
   useEffect(() => {
     lastWidthRef.current = window.innerWidth;
 
@@ -234,6 +237,11 @@ export const Projects: React.FC = () => {
       </div>
 
       {/* ================= 1. МОБИЛЬНАЯ ВЕРСИЯ (АППАРАТНЫЙ CSS STICKY БЕЗ JS) ================= */}
+      {/* 
+        На телефонах и планшетах (< 1024px) карточки наслаиваются через 100% нативный CSS position: sticky.
+        Это полностью устраняет зависания, скачки и перезагрузки WebKit/Chrome при обратном скролле,
+        так как браузер рендерит анимацию на GPU в отдельном потоке без выполнения JS.
+      */}
       <div className="block lg:hidden max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
         {projects.map((project, idx) => {
           const projectImg = cleanImageMap[project.id] || project.image;
@@ -297,7 +305,7 @@ export const Projects: React.FC = () => {
                 </div>
               </div>
 
-              {/* Описание и кнопка */}
+              {/* Текст и кнопка */}
               <div>
                 <h3 className="text-lg font-bold text-white mb-2 leading-snug">
                   {project.title}
@@ -356,7 +364,7 @@ export const Projects: React.FC = () => {
                   }}
                   className="absolute inset-x-6 pointer-events-auto rounded-[30px] bg-[#090d16] border border-white/[0.12] border-t-cyan-400/30 p-8 shadow-[0_-18px_40px_rgba(0,0,0,0.88),0_25px_50px_rgba(0,0,0,0.85)] will-change-transform [backface-visibility:hidden]"
                 >
-                  {/* Верхний ярлык */}
+                  {/* Верхний индексный ярлык */}
                   <div className="flex items-center justify-between pb-3 mb-6 border-b border-white/10 text-xs font-mono">
                     <div className="flex items-center gap-2.5 truncate pr-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0 shadow-sm shadow-cyan-400/50" />
@@ -449,11 +457,15 @@ export const Projects: React.FC = () => {
         </div>
       </div>
 
-      <ProjectModal
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-        onDiscuss={handleDiscuss}
-      />
+      {selectedProject && (
+        <Suspense fallback={null}>
+          <ProjectModal
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+            onDiscuss={handleDiscuss}
+          />
+        </Suspense>
+      )}
     </section>
   );
 };

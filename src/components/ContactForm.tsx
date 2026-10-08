@@ -46,16 +46,19 @@ export const ContactForm: React.FC = () => {
 
     const friendlyTariff = tariffLabels[tariff] || tariff || (lang === 'ru' ? 'Индивидуальный расчет' : 'Custom Estimate');
 
+    // Принимаем любой формат ссылки (iliaarkov.com, www.site.ru, https://...)
+    const normalizedUrl = projectUrl.trim();
+
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          contact,
+          name: name.trim(),
+          contact: contact.trim(),
           tariff: friendlyTariff,
-          projectUrl,
-          message,
+          projectUrl: normalizedUrl,
+          message: message.trim(),
           lang,
         }),
       });
@@ -67,7 +70,7 @@ export const ContactForm: React.FC = () => {
         setProjectUrl('');
         setMessage('');
       } else {
-        // Если API на статическом хостинге недоступен, всё равно подтверждаем заявку клиенту
+        // Если API на статическом хостинге недоступен, подтверждаем заявку клиенту
         setSubmitted(true);
         setName('');
         setContact('');
@@ -75,7 +78,7 @@ export const ContactForm: React.FC = () => {
         setMessage('');
       }
     } catch {
-      // Резервный успешный отклик для пользователя
+      // Резервный успешный отклик
       setSubmitted(true);
       setName('');
       setContact('');
@@ -119,6 +122,7 @@ export const ContactForm: React.FC = () => {
                 {t.contact.form.successMessage}
               </p>
               <button
+                type="button"
                 onClick={() => setSubmitted(false)}
                 className="px-6 py-2.5 rounded-full text-sm font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
               >
@@ -126,7 +130,7 @@ export const ContactForm: React.FC = () => {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               {error && (
                 <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 shrink-0" />
@@ -136,10 +140,11 @@ export const ContactForm: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  <label htmlFor="contact-name" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                     {t.contact.form.nameLabel} <span className="text-cyan-400">*</span>
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     required
                     value={name}
@@ -150,10 +155,11 @@ export const ContactForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  <label htmlFor="contact-target" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                     {t.contact.form.contactLabel} <span className="text-cyan-400">*</span>
                   </label>
                   <input
+                    id="contact-target"
                     type="text"
                     required
                     value={contact}
@@ -165,7 +171,7 @@ export const ContactForm: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label htmlFor="tariff-select" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   {t.contact.form.tariffLabel}
                 </label>
                 <select
@@ -194,11 +200,16 @@ export const ContactForm: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label htmlFor="project-url" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   {t.contact.form.projectUrlLabel}
                 </label>
                 <input
-                  type="url"
+                  id="project-url"
+                  type="text"
+                  inputMode="url"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={projectUrl}
                   onChange={(e) => setProjectUrl(e.target.value)}
                   placeholder={t.contact.form.projectUrlPlaceholder}
@@ -207,10 +218,11 @@ export const ContactForm: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label htmlFor="contact-message" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   {t.contact.form.messageLabel}
                 </label>
                 <textarea
+                  id="contact-message"
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
