@@ -67,7 +67,7 @@ export const Guarantees: React.FC = () => {
           </p>
         </div>
 
-        {/* ================= 4 БЛОКА ГАРАНТИЙ: 1 СТРОКА НА ПК, 2 НА 2 НА ПЛАНШЕТАХ, 1 НА ТЕЛЕФОНАХ ================= */}
+        {/* ================= 4 БЛОКА ГАРАНТИЙ ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {items.map((item, idx) => {
             const Icon = item.icon;
@@ -95,15 +95,15 @@ export const Guarantees: React.FC = () => {
                     {lang === 'ru' ? item.titleRu : item.titleEn}
                   </h3>
 
-                  {/* Описание (только чистое решение, без проблем и красного) */}
+                  {/* Описание */}
                   <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
                     {lang === 'ru' ? item.descRu : item.descEn}
                   </p>
                 </div>
-
+{/* 
                 <div className="mt-5 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
-                </div>
+                </div> */}
               </div>
             );
           })}
