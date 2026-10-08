@@ -190,7 +190,6 @@ export interface Translations {
     title: string;
     description1: string;
     description2: string;
-    btnTelegram: string;
     btnSubmitProject: string;
     disclaimer: string;
     form: {
@@ -228,7 +227,6 @@ export interface Translations {
     email: string;
     privacy: string;
     copyright: string;
-    cmsButton: string;
   };
   privacyModal: {
     title: string;
@@ -243,26 +241,6 @@ export interface Translations {
     p8: string;
     p9: string;
     p10: string;
-  };
-  cms: {
-    title: string;
-    leadsCount: string;
-    noLeads: string;
-    status: {
-      new: string;
-      in_progress: string;
-      completed: string;
-      archived: string;
-    };
-    telegramSettingsTitle: string;
-    telegramTokenLabel: string;
-    telegramChatIdLabel: string;
-    saveSettings: string;
-    savedToast: string;
-    testSend: string;
-    exportCsv: string;
-    clearLeads: string;
-    close: string;
   };
 }
 
@@ -353,7 +331,7 @@ export const translations: Record<Language, Translations> = {
         {
           badge: 'Быстрый заказ в 1 клик',
           title: 'Понятный следующий шаг без барьеров',
-          description: 'Прямое целевое действие: быстрая запись в Telegram, WhatsApp или отправка заявки за 20 секунд. Клиент не путается в профиле и делает заказ сразу.',
+          description: 'Прямое целевое действие: быстрая запись в мессенджер / на почту и отправка заявки за 20 секунд. Клиент не путается в профиле и делает заказ сразу.',
         },
         {
           badge: 'Высокое доверие и статус',
@@ -448,7 +426,7 @@ export const translations: Record<Language, Translations> = {
           id: 'nodejs',
           name: 'Node.js',
           subtitle: 'Серверная логика и отправка заявок',
-          description: 'Отвечает за моментальную доставку заявок клиентов прямо в Telegram-бот, валидацию контактных данных и интеграции.',
+          description: 'Отвечает за моментальную доставку заявок клиентов прямо в мессенджер или на почту, валидацию контактных данных и интеграции.',
           tools: [
             {
               id: 'node',
@@ -666,7 +644,7 @@ export const translations: Record<Language, Translations> = {
     pricing: {
       preTitle: 'Стартовые цены',
       title: 'Выберите подходящий формат сайта',
-      intro: 'Сейчас я расширяю портфолио, поэтому предлагаю разработку по специальной стоимости для ближайших трёх проектов.',
+      intro: 'Сейчас я расширяю портфолио, поэтому предлагаю разработку по специальной стоимости для ближайших пяти проектов.',
       strikethroughNote: 'Зачёркнутая цена – моя планируемая базовая стоимость после завершения этапа формирования портфолио.',
       durationPrefix: 'Срок:',
       includedTitle: 'Входит:',
@@ -714,7 +692,7 @@ export const translations: Record<Language, Translations> = {
             'портфолио или примеры работ;',
             'этапы сотрудничества;',
             'блок частых вопросов;',
-            'форма заявки или запись через Telegram/соц-сети;',
+            'форма заявки или оплаты;',
             'помощь в организации предоставленных материалов;',
             'базовая техническая SEO-настройка;',
             'подключение аналитики;',
@@ -742,7 +720,7 @@ export const translations: Record<Language, Translations> = {
             'базовая административная панель;',
             'добавление и редактирование информации;',
             'сохранение заявок;',
-            'уведомления о новых обращениях;',
+            'форма заявки или оплаты;',
             'формы и интерактивные элементы;',
             'базовая техническая SEO-настройка;',
             'подключение аналитики;',
@@ -785,7 +763,7 @@ export const translations: Record<Language, Translations> = {
             description: 'Храните заявки, товары и другую необходимую информацию.',
           },
           {
-            title: 'Уведомления в Telegram / соц.сеть / на почту',
+            title: 'Уведомления в мессенджер / на почту',
             description: 'Получайте сообщение, когда посетитель заполняет форму на сайте.',
           },
           {
@@ -859,7 +837,6 @@ export const translations: Record<Language, Translations> = {
       title: 'Расскажите, какой сайт вам нужен',
       description1: 'Для предварительной оценки пришлите ссылку на ваши социальные сети или существующий сайт и коротко опишите задачу.',
       description2: 'Я посмотрю материалы, задам несколько вопросов и предложу подходящий формат работы.',
-      btnTelegram: 'Написать Илье',
       btnSubmitProject: 'Отправить описание проекта',
       disclaimer: 'Предварительное обсуждение бесплатно и ни к чему вас не обязывает.',
       form: {
@@ -877,7 +854,7 @@ export const translations: Record<Language, Translations> = {
         submittingBtn: 'Отправка...',
         successTitle: 'Заявка успешно отправлена!',
         successMessage: 'Спасибо за обращение. Я свяжусь с вами в ближайшее время для обсуждения деталей.',
-        errorMessage: 'Произошла ошибка при отправке. Пожалуйста, напишите мне напрямую в Telegram.',
+        errorMessage: 'Произошла ошибка при отправке. Пожалуйста, напишите мне напрямую в Telegram или на почту.',
         validationError: 'Пожалуйста, укажите ваше имя и контакт',
         sendAnother: 'Отправить ещё одну заявку',
         tariffs: {
@@ -897,7 +874,6 @@ export const translations: Record<Language, Translations> = {
       email: 'hello@iliaarkov.com',
       privacy: 'Политика конфиденциальности',
       copyright: '© 2026 Илья Арьков',
-      cmsButton: 'Управление заявками (CMS)',
     },
 		privacyModal: {
 			title: 'Политика конфиденциальности',
@@ -913,26 +889,6 @@ export const translations: Record<Language, Translations> = {
 			p9: '8. Контактная информация. Все вопросы, связанные с обработкой персональных данных, включая запросы на доступ, уточнение, блокирование, уничтожение или отзыв согласия, следует направлять по адресу: hello@iliaarkov.com. Оператором персональных данных является Илья Арьков (физическое лицо, осуществляющее деятельность в качестве исполнителя услуг по разработке сайтов).',
 			p10: '9. Обновление Политики. Владелец Сайта вправе вносить изменения в настоящую Политику. Новая редакция вступает в силу с момента её размещения на Сайте, если иное не предусмотрено новой редакцией.',
 		},
-    cms: {
-      title: 'Панель управления заявками и CMS',
-      leadsCount: 'Всего заявок',
-      noLeads: 'Заявок пока нет. Новые заявки с формы сразу появятся здесь.',
-      status: {
-        new: 'Новая',
-        in_progress: 'В работе',
-        completed: 'Завершена',
-        archived: 'Архив',
-      },
-      telegramSettingsTitle: 'Настройки Telegram бота (резервные)',
-      telegramTokenLabel: 'Telegram Bot Token',
-      telegramChatIdLabel: 'Telegram Chat ID',
-      saveSettings: 'Сохранить настройки',
-      savedToast: 'Настройки сохранены',
-      testSend: 'Отправить тестовое уведомление',
-      exportCsv: 'Экспорт в CSV',
-      clearLeads: 'Очистить историю',
-      close: 'Закрыть панель',
-    },
   },
   en: {
     header: {
@@ -1020,7 +976,7 @@ export const translations: Record<Language, Translations> = {
         {
           badge: '1-click direct booking',
           title: 'Frictionless next step for the client',
-          description: 'Clear call-to-action: fast direct booking via Telegram, WhatsApp, or a simple form in 20 seconds. Zero client friction.',
+          description: 'Immediate, targeted action: quickly enter details into a messaging app or email and submit an application in 20 seconds. Zero client friction.',
         },
         {
           badge: 'High trust & authority',
@@ -1114,8 +1070,8 @@ export const translations: Record<Language, Translations> = {
         {
           id: 'nodejs',
           name: 'Node.js',
-          subtitle: 'Backend Logic & Instant Telegram Alerts',
-          description: 'Handles instant lead routing directly into Telegram bots, form validations, and secure automated notifications.',
+          subtitle: 'Backend Logic & Instant Alerts into the messenger',
+          description: 'Handles instant lead routing directly into messenger or email, form validations, and secure automated notifications.',
           tools: [
             {
               id: 'node',
@@ -1333,7 +1289,7 @@ export const translations: Record<Language, Translations> = {
     pricing: {
       preTitle: 'Starter Rates',
       title: 'Choose the Right Website Format',
-      intro: 'I am currently expanding my commercial portfolio, offering special starter rates for the next 3 projects.',
+      intro: 'I am currently expanding my commercial portfolio, offering special starter rates for the next 5 projects.',
       strikethroughNote: 'The strikethrough price indicates my planned baseline rate once the portfolio expansion phase concludes.',
       durationPrefix: 'Timeline:',
       includedTitle: 'Included:',
@@ -1381,7 +1337,7 @@ export const translations: Record<Language, Translations> = {
             'portfolio showcase with case studies;',
             'collaboration process steps;',
             'interactive FAQ accordion;',
-            'lead form or Telegram / Email / SM inquiry buttons;',
+            'application form or payment form;',
             'assistance structuring provided content;',
             'foundational technical SEO setup;',
             'analytics integration (Google/Yandex);',
@@ -1409,7 +1365,7 @@ export const translations: Record<Language, Translations> = {
             'administrative content panel (CMS);',
             'add & edit content easily;',
             'lead storage & dispatch;',
-            'instant Telegram / Email / SM lead notifications;',
+            'application form or payment form;',
             'interactive forms & custom UI logic;',
             'advanced technical SEO setup;',
             'analytics & goal tracking setup;',
@@ -1526,7 +1482,6 @@ export const translations: Record<Language, Translations> = {
       title: 'Tell me what website you need',
       description1: 'For an initial assessment, send a link to your current social media or existing site and briefly describe your vision.',
       description2: 'I will review your materials, ask a few clarifying questions, and recommend the best collaboration approach.',
-      btnTelegram: 'Message Ilia',
       btnSubmitProject: 'Submit Project Details',
       disclaimer: 'The preliminary consultation is free and carries no obligation.',
       form: {
@@ -1544,7 +1499,7 @@ export const translations: Record<Language, Translations> = {
         submittingBtn: 'Sending...',
         successTitle: 'Inquiry Sent Successfully!',
         successMessage: 'Thank you for reaching out. I will review your project and get back to you shortly.',
-        errorMessage: 'An error occurred during sending. Please message me directly on Telegram.',
+        errorMessage: 'An error occurred during sending. Please message me directly on Telegram or Email.',
         validationError: 'Please provide your name and contact',
         sendAnother: 'Send another message',
         tariffs: {
@@ -1564,7 +1519,6 @@ export const translations: Record<Language, Translations> = {
       email: 'hello@iliaarkov.com',
       privacy: 'Privacy Policy',
       copyright: '© 2026 Ilia Arkov',
-      cmsButton: 'Lead Manager (CMS)',
     },
 		privacyModal: {
 			title: 'Privacy Policy',
@@ -1580,25 +1534,5 @@ export const translations: Record<Language, Translations> = {
 			p9: '8. Contact information. All inquiries related to the processing of personal data, including requests for access, rectification, blocking, deletion, or withdrawal of consent, should be sent to: hello@iliaarkov.com. The personal data operator is Ilya Arkov (an individual providing website development services).',
 			p10: '9. Policy updates. The Site owner reserves the right to amend this Policy. The new version becomes effective from the moment it is posted on the Site, unless otherwise specified in the new version.',
 		},
-    cms: {
-      title: 'Lead Management & CMS Dashboard',
-      leadsCount: 'Total Leads',
-      noLeads: 'No inquiries recorded yet. Submissions from the contact form will appear here in real-time.',
-      status: {
-        new: 'New',
-        in_progress: 'In Progress',
-        completed: 'Completed',
-        archived: 'Archived',
-      },
-      telegramSettingsTitle: 'Telegram Bot Configuration (Client Override)',
-      telegramTokenLabel: 'Telegram Bot Token',
-      telegramChatIdLabel: 'Telegram Chat ID',
-      saveSettings: 'Save Settings',
-      savedToast: 'Settings saved to LocalStorage',
-      testSend: 'Send Test Notification',
-      exportCsv: 'Export to CSV',
-      clearLeads: 'Clear Lead History',
-      close: 'Close Dashboard',
-    },
   },
 };

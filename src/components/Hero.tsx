@@ -291,7 +291,7 @@ export const Hero: React.FC = () => {
                 {lang === 'ru' ? 'Новая заявка!' : 'New Lead!'}
               </div>
               <div className="text-[10px] text-slate-400">
-                {lang === 'ru' ? 'Прямо в Telegram' : 'Direct to Telegram'}
+                {lang === 'ru' ? 'Прямо в мессенджер' : 'Direct to the messenger'}
               </div>
             </div>
           </div>
@@ -397,7 +397,7 @@ export const Hero: React.FC = () => {
                       <source srcSet="/images/after-website.webp" type="image/webp" />
                       <img
                         src="/images/after-website.jpg"
-                        alt={lang === 'ru' ? 'Современный сайт со структурой и заявками' : 'Clean structured website with instant Telegram leads'}
+                        alt={lang === 'ru' ? 'Современный сайт со структурой и заявками' : 'Clean structured website with instant leads'}
                         decoding="async"
                         width={1000}
                         height={625}
@@ -407,8 +407,8 @@ export const Hero: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14]/90 via-transparent to-transparent" />
                     <div className="absolute bottom-2.5 left-3 right-3 text-[11px] text-cyan-100 font-medium leading-snug">
                       {lang === 'ru'
-                        ? 'Одна понятная ссылка: структурированные услуги, цены, портфолио и моментальное уведомление в Telegram'
-                        : 'One clear link: structured rates, portfolio, and instant lead alerts straight into Telegram'}
+                        ? 'Одна понятная ссылка: структурированные услуги, цены, портфолио и моментальное уведомление о новых заявках'
+                        : 'One clear link: structured rates, portfolio, and instant notification of new applications'}
                     </div>
                   </div>
                 </div>
@@ -424,11 +424,6 @@ export const Hero: React.FC = () => {
             <div className="px-6 py-2.5 bg-black/40 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
               <div className="flex items-center gap-2">
                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                <span>
-                  {isTouch
-                    ? (lang === 'ru' ? 'Плавный параллакс при скролле страницы' : 'Smooth scroll parallax')
-                    : (lang === 'ru' ? 'Двигайте курсором мыши для 3D-эффекта' : 'Move cursor for 3D parallax')}
-                </span>
               </div>
               <span className="text-cyan-400 font-mono text-[10px]">
                 React &bull; TypeScript &bull; Tailwind

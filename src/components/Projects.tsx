@@ -21,10 +21,10 @@ export const Projects: React.FC = () => {
   const lastWidthRef = useRef<number>(0);
 
   const cleanImageMap: Record<string, string> = {
-    'specialist-portfolio': '/projects/portfolio.jpg',
-    'nonprofit-redesign': '/projects/nonprofit.jpg',
-    'wine-coop': '/projects/wine-coop.jpg',
-    'driving-center': '/projects/driving-center.jpg',
+    'specialist-portfolio': '/projects/portfolio.webp',
+    'nonprofit-redesign': '/projects/nonprofit.webp',
+    'wine-coop': '/projects/wine-coop.webp',
+    'driving-center': '/projects/driving-center.webp',
   };
 
   const projects = t.projects.items || [];

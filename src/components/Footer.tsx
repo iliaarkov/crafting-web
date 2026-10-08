@@ -57,15 +57,6 @@ export const Footer: React.FC = () => {
               <span>{t.footer.privacy}</span>
             </button>
 
-            {/* Back to top button */}
-            <button
-              onClick={scrollToTop}
-              className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
-              title="Scroll to top"
-              aria-label="Scroll to top"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
           </div>
         </div>
 
