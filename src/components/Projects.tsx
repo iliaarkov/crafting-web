@@ -23,8 +23,8 @@ export const Projects: React.FC = () => {
   const cleanImageMap: Record<string, string> = {
     'specialist-portfolio': '/projects/portfolio.webp',
     'nonprofit-redesign': '/projects/nonprofit.webp',
-    'wine-coop': '/projects/wine-coop.webp',
-    'driving-center': '/projects/driving-center.webp',
+    'wine-coop': '/projects/intuitivo.webp',
+    'driving-center': '/projects/driftet.webp',
   };
 
   const projects = t.projects.items || [];
