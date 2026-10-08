@@ -54,6 +54,12 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           <p>{t.privacyModal.p2}</p>
           <p>{t.privacyModal.p3}</p>
           <p>{t.privacyModal.p4}</p>
+          <p>{t.privacyModal.p5}</p>
+          <p>{t.privacyModal.p6}</p>
+          <p>{t.privacyModal.p7}</p>
+          <p>{t.privacyModal.p8}</p>
+          <p>{t.privacyModal.p9}</p>
+          <p>{t.privacyModal.p10}</p>
         </div>
 
         <div className="flex justify-end pt-4 border-t border-white/10">

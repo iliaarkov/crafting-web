@@ -29,7 +29,7 @@ export const Footer: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-slate-300">
             <a
-              href="https://t.me/arkovilya"
+              href="https://t.me/iliaarkovdotcom"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
@@ -39,7 +39,7 @@ export const Footer: React.FC = () => {
             </a>
 
             <a
-              href="mailto:arkovilia7@gmail.com"
+              href="mailto:hello@iliaarkov.com"
               className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
             >
               <Mail className="w-4 h-4 text-cyan-400" />
