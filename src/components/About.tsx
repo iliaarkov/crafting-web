@@ -177,7 +177,7 @@ export const About: React.FC = () => {
                         <picture>
                           <source srcSet="/images/ilya.webp" type="image/webp" />
                           <img
-                            src="/images/ilya.jpg"
+                            src="/images/ilya.webp"
                             alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
                             onError={() => setImgError(true)}
                             width={176}
@@ -337,8 +337,8 @@ export const About: React.FC = () => {
                   <picture>
                     <source srcSet="/images/ilya.webp" type="image/webp" />
                     <img
-                      src="/images/ilya.jpg"
-                      alt={lang === 'ru' ? 'Илья Арьков — Веб-разработчик' : 'Ilia Arkov — Web Developer'}
+                      src="/images/ilya.webp"
+                      alt={lang === 'ru' ? 'Илья Арьков – Веб-разработчик' : 'Ilia Arkov – Web Developer'}
                       onError={() => setImgError(true)}
                       width={160}
                       height={160}
